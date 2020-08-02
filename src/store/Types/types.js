@@ -1,0 +1,4 @@
+const EMPOLYEE_DETAILS = "EMPOLYEE_DETAILS";
+
+export default { EMPOLYEE_DETAILS };
+
