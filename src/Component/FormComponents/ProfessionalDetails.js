@@ -8,11 +8,14 @@ import { bindDispatch } from "../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import { professionStyle } from "../../styles/FormStyles";
+import ModalBox from "../common/ModalBox";
 
 const ProfessionalDetails = (props) => {
   const { actions, reducer } = props;
   const { professionToggle, studentDetails, professionalDetails } = reducer;
   const [component, setComponent] = useState();
+  const [toggle, setToggle] = useState("");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (professionToggle.isStudent) {
@@ -25,21 +28,26 @@ const ProfessionalDetails = (props) => {
   }, []);
 
   const assignComponent = (event) => {
+    const { isEdit } = reducer;
     let value = event.target.value;
     let isChecked = { ...professionToggle };
     let checkedArray = Object.entries(isChecked);
     checkedArray.map((item) => {
       return (item[1] = false);
     });
-    debugger;
+    setToggle(value);
+    if (isEdit && !open) {
+      setOpen(true);
+      return;
+    }
     isChecked = Object.fromEntries(checkedArray);
     if (value === "student") {
-      isChecked.isStudent = event.target.checked;
       let data = Object.entries(studentDetails);
       data.map((item) => {
         item[1] = "";
       });
       data = Object.fromEntries(data);
+      isChecked.isStudent = event.target.checked;
       actions.assignData("studentDetails", data);
 
       actions.assignData("professionToggle", isChecked);
@@ -52,7 +60,6 @@ const ProfessionalDetails = (props) => {
       });
       data = Object.fromEntries(data);
       actions.assignData("professionalDetails", data);
-
       actions.assignData("professionToggle", isChecked);
       setComponent(<Professional />);
     } else if (value === "houseWives") {
@@ -60,6 +67,39 @@ const ProfessionalDetails = (props) => {
       actions.assignData("professionToggle", isChecked);
       setComponent(<HouseWives />);
     }
+  };
+
+  const handleToggle = async (event) => {
+    let isChecked = { ...professionToggle };
+    let checkedArray = Object.entries(isChecked);
+    checkedArray.map((item) => {
+      return (item[1] = false);
+    });
+    isChecked = Object.fromEntries(checkedArray);
+    if (toggle === "student") {
+      isChecked.isStudent = true;
+      let data = Object.entries(studentDetails);
+      data.map((item) => {
+        item[1] = "";
+      });
+      data = Object.fromEntries(data);
+      actions.assignData("studentDetails", data);
+      setComponent(<Student />);
+    } else if (toggle === "professional") {
+      isChecked.isProfessional = true;
+      let data = Object.entries(professionalDetails);
+      data.map((item) => {
+        item[1] = "";
+      });
+      data = Object.fromEntries(data);
+      actions.assignData("professionalDetails", data);
+      setComponent(<Professional />);
+    } else if (toggle === "houseWives") {
+      isChecked.isHouseWive = true;
+      setComponent(<HouseWives />);
+    }
+    await actions.assignData("professionToggle", isChecked);
+    setOpen(false);
   };
 
   const classes = professionStyle();
@@ -104,6 +144,13 @@ const ProfessionalDetails = (props) => {
             label="HouseWives"
           />
         </RadioGroup>
+        {open ? (
+          <ModalBox
+            open={open}
+            onClose={() => setOpen(false)}
+            handleToggle={handleToggle}
+          />
+        ) : null}
       </div>
       {component}
     </div>

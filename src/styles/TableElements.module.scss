@@ -1,0 +1,114 @@
+.headerTitle {
+  display: flex;
+  justify-content: space-between;
+  // padding:7px
+}
+.alignCheckBox {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 28px;
+  padding-right: 15px;
+  margin-right: 10px;
+  pointer-events: none;
+}
+
+.centerAlign {
+  align-self: center;
+}
+
+.listStyling {
+  list-style: none;
+  padding: 0px;
+}
+.dropDown {
+  text-align: left;
+}
+.checkBoxStyling {
+  padding-left: 30px;
+}
+
+.sort {
+  border: none;
+  background: #e3e3e3;
+  color: rgb(71, 75, 182);
+  font-size: 16px;
+  pointer-events: all;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.arrowUp{
+  display: flex;
+  justify-content: center;
+  align-self: flex-end;
+}
+
+.moreIcon {
+  border: none;
+  color: #474bb6;
+  background: transparent;
+  font-size: 15px;
+  outline: none;
+  cursor: pointer;
+}
+.actionButton {
+  border: solid 0.1px;
+  background: transparent;
+  font-size: 15px;
+  padding: 5px;
+  width: 65px;
+  cursor: pointer;
+}
+.buttonList {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+.pagination {
+  .paginationDropDown {
+    height: 28px;
+  }
+  .nextPage,
+  .prevPage {
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #00000080;
+    padding: 0 15px;
+  }
+}
+.pagination-bottom {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0px;
+}
+
+.show {
+  display: block;
+}
+.hide {
+  display: none;
+}
+.allowPointer {
+  pointer-events: all;
+}
+.disableEvents {
+  pointer-events: none;
+  border: none;
+  color: #474bb6;
+  background: transparent;
+  font-size: 15px;
+  outline: none;
+}
+.allowEdit {
+  display: flex;
+  cursor: auto;
+}
+.noEdit {
+  display: flex;
+  cursor: not-allowed;
+}

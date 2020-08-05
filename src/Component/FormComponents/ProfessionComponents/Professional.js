@@ -1,28 +1,38 @@
 import React, { useEffect } from "react";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-} from "@material-ui/core";
+import { FormControl, InputLabel, Grid } from "@material-ui/core";
 import { bindDispatch } from "../../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import { professionalForm } from "../../../styles/FormStyles";
 import { salary, level } from "../../../utils/productSeed";
+import SelectField from "../../common/SelectField";
 
 const Professional = (props) => {
   const classes = professionalForm();
   const { actions, reducer } = props;
+  const { checkEmptyField } = actions;
   const { handleData } = actions;
   const { professionalDetails, isCompleted } = reducer;
   let detail = "professional";
   let index = 2;
 
   useEffect(() => {
-    isCompleted[2] = false;
-    actions.assignData("isCompleted", isCompleted);
+    let data = Object.entries(professionalDetails);
+    let validationCount = 0;
+    async function checkField() {
+      let count = await checkEmptyField(
+        data,
+        professionalDetails,
+        validationCount
+      );
+      if (count === data.length) {
+        isCompleted[2] = false;
+      }
+      let professionType = "professional";
+      actions.assignData("profession", professionType);
+      actions.assignData("isCompleted", isCompleted);
+    }
+    checkField();
   }, []);
 
   return (
@@ -37,24 +47,12 @@ const Professional = (props) => {
             <InputLabel id="demo-simple-select-filled-label">
               Salary Per Annum
             </InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
+            <SelectField
               name="salary"
               value={professionalDetails.salary}
               onChange={(event) => handleData(event, index, detail)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {salary.map((degree, index) => {
-                return (
-                  <MenuItem key={index} value={degree}>
-                    {degree}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              data={salary}
+            />
           </FormControl>
         </Grid>{" "}
         <Grid item sm={6}>
@@ -64,24 +62,12 @@ const Professional = (props) => {
             fullWidth="true"
           >
             <InputLabel id="demo-simple-select-filled-label">Level</InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
+            <SelectField
               name="level"
               value={professionalDetails.level}
               onChange={(event) => handleData(event, index, detail)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {level.map((degree, index) => {
-                return (
-                  <MenuItem key={index} value={degree}>
-                    {degree}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              data={level}
+            />
           </FormControl>
         </Grid>
       </Grid>

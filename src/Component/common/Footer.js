@@ -6,7 +6,7 @@ const Footer = (props) => {
     <Container className="form">
       <Button
         variant="contained"
-        color="primary"
+        color="grey"
         onClick={
           !props.activeStep
             ? () => props.cancel()

@@ -4,7 +4,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 export const formStyles = makeStyles({
   container: {
     height: "830px",
-    background: "#1515151f",
   },
   root: {
     display: "flex",
@@ -30,30 +29,34 @@ export const formStyles = makeStyles({
       },
     },
   },
+  button: {
+    textTransform: "none",
+    fontSize: "20px",
+  },
 });
 
-export const QontoConnector = withStyles({
-  alternativeLabel: {
-    top: 10,
-    left: "calc(-50% + 16px)",
-    right: "calc(50% + 16px)",
-  },
-  active: {
-    "& $line": {
-      borderColor: "blue",
-    },
-  },
-  completed: {
-    "& $line": {
-      borderColor: "blue",
-    },
-  },
-  line: {
-    borderColor: "red",
-    borderTopWidth: 3,
-    borderRadius: 1,
-  },
-})(StepConnector);
+// export const QontoConnector = withStyles({
+//   alternativeLabel: {
+//     top: 10,
+//     left: "calc(-50% + 16px)",
+//     right: "calc(50% + 16px)",
+//   },
+//   active: {
+//     "& $line": {
+//       borderColor: "blue",
+//     },
+//   },
+//   completed: {
+//     "& $line": {
+//       borderColor: "blue",
+//     },
+//   },
+//   line: {
+//     borderColor: "red",
+//     borderTopWidth: 3,
+//     borderRadius: 1,
+//   },
+// })(StepConnector);
 
 export const CustomAutocomplete = withStyles({
   tag: {

@@ -11,6 +11,8 @@ const HouseWives = (props) => {
 
   useEffect(() => {
     isCompleted[2] = true;
+    let professionType = "HouseWife";
+    actions.assignData("profession", professionType);
     actions.assignData("isCompleted", isCompleted);
   }, []);
 

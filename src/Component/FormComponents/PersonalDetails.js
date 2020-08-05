@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import InputField from "../common/InputField";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns"; // import
+import DateFnsUtils from "@date-io/date-fns"; 
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
@@ -80,7 +80,6 @@ const PersonalDetails = (props) => {
                   name="gender"
                   value="female"
                   checked={personalDetails["gender"] === "female"}
-                  // checked={true}
                   onChange={(event) => handleData(event, index, detail)}
                 />
               }

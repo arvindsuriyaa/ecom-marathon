@@ -1,0 +1,102 @@
+.ReactTable {
+  margin: 0px 35px;
+  border: none;
+}
+.ReactTable .rt-table {
+  border: 1px solid #00000033;
+}
+.ReactTable .rt-tbody .rt-td {
+  border-right: none;
+}
+.ReactTable .rt-thead.-header {
+  box-shadow: none;
+  background-color: rgb(227, 227, 227);
+}
+
+.ReactTable .rt-thead .rt-th,
+.ReactTable .rt-thead .rt-td {
+  padding: 16px 0px;
+  padding-right: 17px;
+  padding-left: 6px;
+  line-height: normal;
+  position: relative;
+  border-right: none;
+  transition: box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  outline: none;
+}
+.rt-tr-group:nth-of-type(even) {
+  background: #2baa9610;
+}
+.rt-tr-group:nth-of-type(odd) {
+  background: #ffffff;
+}
+.rt-tr-group {
+  background: rgb(247, 247, 247);
+}
+.tableTitle {
+  text-align: center;
+}
+.ReactTable .rt-th,
+.ReactTable .rt-td {
+  padding: 15px 5px;
+}
+.pagination-bottom {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0px;
+}
+.ReactTable .rt-resizer {
+  width: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 8px;
+  top: 12px;
+  height: 60%;
+  pointer-events: all;
+  cursor: ew-resize;
+  background: #c9cad882;
+}
+
+.ReactTable .rt-thead .rt-th.-sort-asc,
+.ReactTable .rt-thead .rt-td.-sort-asc ::before {
+  box-shadow: none;
+}
+.ReactTable .rt-thead .rt-th.-sort-desc,
+.ReactTable .rt-thead .rt-td.-sort-desc {
+  box-shadow: none;
+}
+.ReactTable .rt-thead .rt-th.-cursor-pointer,
+.ReactTable .rt-thead .rt-td.-cursor-pointer {
+  cursor: pointer;
+  pointer-events: none;
+  font-family: "Rubik", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+}
+.ReactTable .rt-tbody .rt-tr-group {
+  font-family: "Rubik", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+.tableDeleteButton {
+  display: none;
+}
+.ReactTable .rt-th,
+.ReactTable .rt-td {
+  // padding: 7px;
+}
+.ReactTable .rt-tbody .rt-tr-group:hover .tableDeleteButton {
+  display: inline-block;
+}
+// .tableDeleteButton
+// .MuiButton-root {
+//   padding: 0px !important;
+// }
+
+.ReactTable .rt-tr {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 66px;
+}

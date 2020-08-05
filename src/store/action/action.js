@@ -1,8 +1,14 @@
 import EMPLOYEE_DETAILS from "../Types/types";
+import { EDIT_DETAILS } from "../Types/types";
 import _ from "lodash";
 
 export const assignData = (name, value) => ({
   type: EMPLOYEE_DETAILS,
+  payload: { name: name, value: value },
+});
+
+export const editData = (name, value) => ({
+  type: EDIT_DETAILS,
   payload: { name: name, value: value },
 });
 
@@ -25,7 +31,6 @@ export const collectInfo = (event) => {
 
 export const handleData = (event, index, detail) => {
   return async (dispatch, getState) => {
-    debugger;
     const {
       personalDetails,
       addressDetails,
@@ -57,7 +62,6 @@ export const handleData = (event, index, detail) => {
 };
 export const handleCheckbox = (event, index, detail) => {
   return async (dispatch, getState) => {
-    debugger;
     const { personalDetails, addressDetails } = getState().reducer;
     const { knowProduct } = personalDetails;
     let name = event.target.name;
@@ -88,7 +92,6 @@ export const handleCheckbox = (event, index, detail) => {
 
 export const checkEmptyField = (data, formDetails, validationCount) => {
   return async () => {
-    // debugger;
     let stepperCheck = 0,
       sample,
       flag = true;
@@ -96,9 +99,7 @@ export const checkEmptyField = (data, formDetails, validationCount) => {
     function dataCheck(data) {
       stepperCheck = 0;
       data.map((item) => {
-        // debugger
         function keyCheck(detail) {
-          // debugger
           if (typeof detail[1] === "string") {
             if (!detail[1].length) {
               if (flag) {
@@ -154,7 +155,6 @@ export const checkEmptyField = (data, formDetails, validationCount) => {
 
 export const setDetail = (activeStep, formDetails, completed) => {
   return async (dispatch, getState) => {
-    // debugger;
     let reducer = getState().reducer;
     let newCompleted = { ...completed };
     if (activeStep === 0) {
@@ -175,15 +175,13 @@ export const setDetail = (activeStep, formDetails, completed) => {
         newCompleted[activeStep] = true;
       }
     }
-    // dispatch(formDetails)
     return formDetails;
   };
 };
 
 export const stepperCheck = (name, index, detail) => {
   return async (dispatch, getState) => {
-    debugger;
-    const { isCompleted, personalDetails, errors } = getState().reducer;
+    const { isCompleted, errors } = getState().reducer;
     let validationCount = 0;
     let newCompleted = { ...isCompleted };
     let data = Object.entries(detail);
@@ -200,7 +198,6 @@ export const stepperCheck = (name, index, detail) => {
     if (emptyFieldCount === 0) {
       newCompleted[index] = true;
     }
-    // reducer["isCompleted"] = newCompleted;
     dispatch(assignData("isCompleted", newCompleted));
   };
 };

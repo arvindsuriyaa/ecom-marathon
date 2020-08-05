@@ -1,20 +1,16 @@
 import React, { useEffect } from "react";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-} from "@material-ui/core";
+import { FormControl, InputLabel, Grid } from "@material-ui/core";
 import InputField from "../../common/InputField";
 import { bindDispatch } from "../../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import { studentForm } from "../../../styles/FormStyles";
 import { graduateLevel, state, district } from "../../../utils/productSeed";
+import SelectField from "../../common/SelectField";
 
 const Student = (props) => {
   const { actions, reducer } = props;
+  const { checkEmptyField } = actions;
   const { handleData } = actions;
   const { studentDetails, isCompleted } = reducer;
   const classes = studentForm();
@@ -22,8 +18,20 @@ const Student = (props) => {
   let index = 2;
 
   useEffect(() => {
-    isCompleted[2] = false;
-    actions.assignData("isCompleted", isCompleted);
+    let validationCount = 0;
+    let data = Object.entries(studentDetails);
+    async function checkField() {
+      let count = await checkEmptyField(data, studentDetails, validationCount);
+
+      if (count === data.length) {
+        isCompleted[2] = false;
+      }
+      let professionType = "student";
+
+      actions.assignData("profession", professionType);
+      actions.assignData("isCompleted", isCompleted);
+    }
+    checkField();
   }, []);
 
   return (
@@ -38,25 +46,12 @@ const Student = (props) => {
             <InputLabel id="demo-simple-select-filled-label">
               Current Qualification
             </InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
-              //   value={age}
+            <SelectField
               name="qualification"
               value={studentDetails.qualification}
               onChange={(event) => handleData(event, index, detail)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {graduateLevel.map((degree, index) => {
-                return (
-                  <MenuItem key={index} value={degree}>
-                    {degree}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              data={graduateLevel}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -102,24 +97,12 @@ const Student = (props) => {
             fullWidth="true"
           >
             <InputLabel id="demo-simple-select-filled-label">State</InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
+            <SelectField
               name="state"
               value={studentDetails.state}
               onChange={(event) => handleData(event, index, detail)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {state.map((degree, index) => {
-                return (
-                  <MenuItem key={index} value={degree}>
-                    {degree}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              data={state}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -131,24 +114,12 @@ const Student = (props) => {
             <InputLabel id="demo-simple-select-filled-label">
               District
             </InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
+            <SelectField
               name="district"
               value={studentDetails.district}
               onChange={(event) => handleData(event, index, detail)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {district.map((degree, index) => {
-                return (
-                  <MenuItem key={index} value={degree}>
-                    {degree}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              data={district}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>

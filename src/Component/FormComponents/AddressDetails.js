@@ -15,6 +15,7 @@ import { createSelector } from "reselect";
 import { communicationStyle } from "../../styles/FormStyles";
 import { state, district } from "../../utils/productSeed";
 import _ from "lodash";
+import SelectField from "../common/SelectField";
 
 const AddressDetails = (props) => {
   const classes = communicationStyle();
@@ -52,10 +53,8 @@ const AddressDetails = (props) => {
             className={classes.formControl}
             fullWidth="true"
           >
-            <InputLabel id="demo-simple-select-filled-label">State</InputLabel>
+            <InputLabel>State</InputLabel>
             <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
               name="state"
               value={addressDetails.state}
               onChange={(event) => handleData(event, index, detail)}
@@ -63,10 +62,10 @@ const AddressDetails = (props) => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              {state.map((degree, index) => {
+              {state.map((state, index) => {
                 return (
-                  <MenuItem key={index} value={degree}>
-                    {degree}
+                  <MenuItem key={index} value={state}>
+                    {state}
                   </MenuItem>
                 );
               })}
@@ -82,24 +81,12 @@ const AddressDetails = (props) => {
             <InputLabel id="demo-simple-select-filled-label">
               District
             </InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
+            <SelectField
               name="district"
               value={addressDetails.district}
               onChange={(event) => handleData(event, index, detail)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {district.map((degree, index) => {
-                return (
-                  <MenuItem key={index} value={degree}>
-                    {degree}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              data={district}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>

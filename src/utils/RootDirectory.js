@@ -1,10 +1,9 @@
-export const LOGIN = "/";
+export const FORM = "/Form";
 
-export const LAYOUT="/layout"
+export const TABLE = "/Table";
 
-export const DASHBOARD = "/layout/products";
+export const PERSONAL_DETAILS = "/Form/PersonalDetails";
 
-export const CHECKOUT = "/layout/check-out";
+export const ADDRESS_DETAILS = "/Form/AddressDetails";
 
-export const SHOPPING_CART = "/layout/shopping-cart";
-
+export const PROFESSIONAL_DETAILS = "/Form/ProfessionalDetails";
