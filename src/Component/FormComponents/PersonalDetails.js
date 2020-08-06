@@ -6,28 +6,25 @@ import {
   Checkbox,
   FormLabel,
   RadioGroup,
-  Radio,
   Typography,
+  FormControl,
+  InputLabel,
 } from "@material-ui/core";
 import InputField from "../common/InputField";
-import "date-fns";
-import DateFnsUtils from "@date-io/date-fns"; 
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
 import { createSelector } from "reselect";
 import { bindDispatch } from "../../utils";
 import { connect } from "react-redux";
 import { CustomAutocomplete, personalStyle } from "../../styles/FormStyles";
 import { marketingMedium } from "../../utils/productSeed";
-import _ from "lodash";
+import DateField from "../common/DateField";
+import RadioButton from "../common/RadioButton";
+import SelectField from "../common/SelectField";
 
 const PersonalDetails = (props) => {
   const classes = personalStyle();
   const { actions, reducer } = props;
   const { handleData, handleCheckbox } = actions;
-  const { personalDetails, errors } = reducer;
+  const { personalDetails, errors, emailCheck } = reducer;
   const { knowProduct } = personalDetails;
   let index = 0;
   let detail = "personalDetails";
@@ -47,7 +44,7 @@ const PersonalDetails = (props) => {
             type="text"
             label="User Name"
             name="userName"
-            value={personalDetails.userName}
+            value={personalDetails.userName || ""}
             onChange={(event) => handleData(event, index, detail)}
           />
         </Grid>
@@ -62,8 +59,7 @@ const PersonalDetails = (props) => {
             <FormControlLabel
               value="male"
               control={
-                <Radio
-                  color="primary"
+                <RadioButton
                   name="gender"
                   value="male"
                   checked={personalDetails["gender"] === "male"}
@@ -75,8 +71,7 @@ const PersonalDetails = (props) => {
             <FormControlLabel
               value="female"
               control={
-                <Radio
-                  color="primary"
+                <RadioButton
                   name="gender"
                   value="female"
                   checked={personalDetails["gender"] === "female"}
@@ -84,26 +79,17 @@ const PersonalDetails = (props) => {
                 />
               }
               label="Female"
-              onChange={(event) => handleData(event, index, detail)}
             />
           </RadioGroup>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              clearable
-              inputVariant="filled"
-              label="Date of Birth"
-              value={personalDetails.dob}
-              fullWidth="true"
-              name="dob"
-              onChange={(date) => {
-                personalDetails["dob"] = date;
-                actions.assignData("personalDetails", personalDetails);
-              }}
-              format="dd/MM/yyyy"
-            />
-          </MuiPickersUtilsProvider>
+          <DateField
+            value={personalDetails.dob}
+            onChange={(date) => {
+              personalDetails["dob"] = date;
+              actions.assignData("personalDetails", personalDetails);
+            }}
+          />
         </Grid>
         <Grid item xs={12} sm={6}>
           <InputField
@@ -124,6 +110,8 @@ const PersonalDetails = (props) => {
               errors.email
                 ? !personalDetails.email
                   ? "*This Field is Mandatory"
+                  : emailCheck
+                  ? "*This Email ID already Exists"
                   : "*Invalid Email"
                 : ""
             }
@@ -141,13 +129,19 @@ const PersonalDetails = (props) => {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <InputField
-            type="text"
-            label="Mother Tongue"
-            name="motherTongue"
-            value={personalDetails.motherTongue}
-            onChange={(event) => handleData(event, index, detail)}
-          />
+          <FormControl
+            variant="filled"
+            className={classes.formControl}
+            fullWidth="true"
+          >
+            <InputLabel>Mother Tongue</InputLabel>
+            <SelectField
+              name="motherTongue"
+              value={personalDetails.motherTongue}
+              onChange={(event) => handleData(event, index, detail)}
+              data={["English", "Tamil", "Hindi", "Malayalam"]}
+            />
+          </FormControl>
         </Grid>
         <Grid item sm={12}>
           <CustomAutocomplete

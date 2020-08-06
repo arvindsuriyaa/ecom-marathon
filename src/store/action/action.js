@@ -12,23 +12,6 @@ export const editData = (name, value) => ({
   payload: { name: name, value: value },
 });
 
-export const collectInfo = (event) => {
-  return (dispatch, getState) => {
-    let { userDetails, errors } = getState().reducer;
-    let name = event.target.name;
-    let value = event.target.value;
-    userDetails[name] = value;
-    errors[name] = "";
-    if (name === "firstName") {
-      userDetails["name"] = value + " " + userDetails.lastName;
-    } else if (name === "lastName") {
-      userDetails["name"] = userDetails.firstName + " " + value;
-    }
-    dispatch(assignData("userDetails", { ...userDetails, [name]: value }));
-    dispatch(assignData("errors", errors));
-  };
-};
-
 export const handleData = (event, index, detail) => {
   return async (dispatch, getState) => {
     const {
@@ -37,9 +20,12 @@ export const handleData = (event, index, detail) => {
       studentDetails,
       professionalDetails,
     } = getState().reducer;
-    
+
     let name = event.target.name;
     let value = event.target.value;
+    if (value.replace(/\s/g, "").length <= 0) {
+      value = "";
+    }
     if (detail === "personalDetails") {
       personalDetails[name] = value;
       dispatch(assignData("personalDetails", personalDetails));
@@ -62,6 +48,37 @@ export const handleData = (event, index, detail) => {
     }
   };
 };
+
+export const errorValidation = () => {
+  return (dispatch, getState) => {
+    const { userHistory, personalDetails, errors, isEdit } = getState().reducer;
+    let duplicationCheck = false;
+    if (!personalDetails.userName) {
+      errors.userName = true;
+    }
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!reg.test(personalDetails.email)) {
+      errors.email = true;
+    }
+    userHistory.map((item) => {
+      if (item.personalDetails.email === personalDetails.email && !isEdit) {
+        duplicationCheck = true;
+      }
+    });
+    (async () => {
+      if (duplicationCheck) {
+        errors.email = true;
+        await dispatch(assignData("emailCheck", true));
+        return;
+      } else {
+        await dispatch(assignData("emailCheck", false));
+      }
+      await dispatch(assignData("errors", { ...errors }));
+    })();
+    return duplicationCheck;
+  };
+};
+
 export const handleCheckbox = (event, index, detail) => {
   return async (dispatch, getState) => {
     const { personalDetails, addressDetails } = getState().reducer;

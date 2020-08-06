@@ -61,6 +61,7 @@ const initialState = {
   permanentAddressCheck: false,
   permanentAddress: {},
   userHistory: [],
+  emailCheck:false,
   toggleIcon: {
     userNameSort: false,
     mailSort: false,

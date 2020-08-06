@@ -36,7 +36,6 @@ const ProfessionalDetails = (props) => {
     setToggle(value);
   };
   const clearField = async (record, isData, flag) => {
-    debugger;
     let isChecked = { ...professionToggle };
     let checkedArray = Object.entries(isChecked);
     checkedArray.map((item) => {

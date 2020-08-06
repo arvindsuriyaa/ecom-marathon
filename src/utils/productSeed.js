@@ -79,7 +79,6 @@ export const defaultState = {
   },
   permanentAddressCheck: false,
   permanentAddress: {},
-  // userHistory: [],
   toggleIcon: {
     userNameSort: false,
     mailSort: false,
@@ -89,10 +88,4 @@ export const defaultState = {
     stateSort: false,
     professionSort: false,
   },
-  // selectAll: false,
-  // checkBoxFlag: [],
-  // cachedAddress: "",
-  // isChecked: false,
-  // index: null,
-  // isEdit: false,
 };

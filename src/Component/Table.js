@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
 import "react-table-v6/react-table.css";
 import "../styles/Table.scss";
 import * as styles from "../styles/TableStyles.module.scss";
@@ -120,9 +119,9 @@ class Table extends Component {
   };
 
   handleEdit = (row) => {
-    const { userCollection } = this.state;
-    const { actions, history } = this.props;
-    let editInfo = [...userCollection];
+    const { actions, history, reducer } = this.props;
+    const { userHistory } = reducer;
+    let editInfo = [...userHistory];
     let userIndex;
     editInfo.map((user, indexValue) => {
       if (user.id === row.original.id) {
@@ -212,13 +211,6 @@ class Table extends Component {
             data={this.state.userCollection}
             onSortedChange={(props) => this.handleSort(props)}
             minRows={0}
-            getTrProps={(state, rowInfo, column) => {
-              return {
-                onClick: () => {
-                  console.log(rowInfo);
-                },
-              };
-            }}
             showPagination={false}
             NoDataComponent={() => null}
             columns={this.state.column}

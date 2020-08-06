@@ -41,22 +41,8 @@ const Form = (props) => {
 
   const save = async () => {
     const { reducer, actions } = props;
-    const { userHistory, isEdit } = reducer;
-    if (!personalDetails.userName) {
-      errors.userName = true;
-    }
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (!reg.test(personalDetails.email)) {
-      errors.email = true;
-    }
-    userHistory.map((item) => {
-      if (item.personalDetails.email === personalDetails.email && !isEdit) {
-        errors.email = true;
-      }
-    });
-    (async () => {
-      await actions.assignData("errors", { ...errors });
-    })();
+    const { errorValidation } = actions;
+    errorValidation();
     if (!errors.userName && !errors.email) {
       const { userHistory, isEdit, id } = reducer;
       if (isEdit) {

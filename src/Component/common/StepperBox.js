@@ -12,7 +12,7 @@ const muiTheme = createMuiTheme({
   overrides: {
     MuiStepIcon: {
       root: {
-        color: "white", // or 'rgba(0, 0, 0, 1)'
+        color: "white",
         border: "2px solid grey",
         borderRadius: "50px",
 
@@ -22,7 +22,6 @@ const muiTheme = createMuiTheme({
           borderRadius: "50px",
         },
         "&$completed": {
-          // color: "blue",
           border: "2px solid #3f51b5",
           "&$active": {
             color: "blue",
@@ -32,14 +31,13 @@ const muiTheme = createMuiTheme({
         },
       },
       text: {
-        // Some CSS
         fill: "blue",
       },
     },
 
     MuiStepLabel: {
       label: {
-        color: "grey", // or 'rgba(0, 0, 0, 1)'
+        color: "grey",
         "&$active": {
           color: "blue",
         },
@@ -78,7 +76,6 @@ const StepperBox = (props) => {
         className={props.className}
         activeStep={activeStep}
         orientation="vertical"
-        // connector={props.connector}
         nonLinear
       >
         {props.navigationList.map((label, index) => (
