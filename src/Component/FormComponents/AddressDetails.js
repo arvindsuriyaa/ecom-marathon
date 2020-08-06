@@ -3,8 +3,6 @@ import {
   Grid,
   FormControl,
   InputLabel,
-  Select,
-  MenuItem,
   FormControlLabel,
   Checkbox,
 } from "@material-ui/core";
@@ -54,22 +52,12 @@ const AddressDetails = (props) => {
             fullWidth="true"
           >
             <InputLabel>State</InputLabel>
-            <Select
+            <SelectField
               name="state"
               value={addressDetails.state}
               onChange={(event) => handleData(event, index, detail)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {state.map((state, index) => {
-                return (
-                  <MenuItem key={index} value={state}>
-                    {state}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              data={state}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>

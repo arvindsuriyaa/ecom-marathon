@@ -212,6 +212,13 @@ class Table extends Component {
             data={this.state.userCollection}
             onSortedChange={(props) => this.handleSort(props)}
             minRows={0}
+            getTrProps={(state, rowInfo, column) => {
+              return {
+                onClick: () => {
+                  console.log(rowInfo);
+                },
+              };
+            }}
             showPagination={false}
             NoDataComponent={() => null}
             columns={this.state.column}

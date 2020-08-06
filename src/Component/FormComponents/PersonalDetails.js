@@ -107,7 +107,7 @@ const PersonalDetails = (props) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <InputField
-            type="text"
+            type="number"
             label="Age"
             name="age"
             value={personalDetails.age}
@@ -133,7 +133,7 @@ const PersonalDetails = (props) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <InputField
-            type="text"
+            type="number"
             label="Mobile no"
             name="mobileNumber"
             value={personalDetails.mobileNumber}

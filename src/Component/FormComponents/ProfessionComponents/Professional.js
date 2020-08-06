@@ -65,7 +65,7 @@ const Professional = (props) => {
             <SelectField
               name="level"
               value={professionalDetails.level}
-              onChange={(event) => handleData(event, index, detail)}
+              onChange={(event) =>  handleData(event, index, detail)}
               data={level}
             />
           </FormControl>

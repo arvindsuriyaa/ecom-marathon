@@ -12,7 +12,12 @@ import ModalBox from "../common/ModalBox";
 
 const ProfessionalDetails = (props) => {
   const { actions, reducer } = props;
-  const { professionToggle, studentDetails, professionalDetails } = reducer;
+  const {
+    professionToggle,
+    studentDetails,
+    professionalDetails,
+    isEdit,
+  } = reducer;
   const [component, setComponent] = useState();
   const [toggle, setToggle] = useState("");
   const [open, setOpen] = useState(false);
@@ -27,78 +32,51 @@ const ProfessionalDetails = (props) => {
     }
   }, []);
 
-  const assignComponent = (event) => {
-    const { isEdit } = reducer;
-    let value = event.target.value;
+  const assignToggle = async (value) => {
+    setToggle(value);
+  };
+  const clearField = async (record, isData, flag) => {
+    debugger;
     let isChecked = { ...professionToggle };
     let checkedArray = Object.entries(isChecked);
     checkedArray.map((item) => {
       return (item[1] = false);
     });
-    setToggle(value);
+    isChecked = Object.fromEntries(checkedArray);
+    let data = Object.entries(record);
+    data.map((item) => {
+      item[1] = "";
+    });
+    data = Object.fromEntries(data);
+    if (!isEdit) {
+      isChecked[isData] = flag;
+    } else {
+      isChecked[isData] = true;
+    }
+    await actions.assignData("professionToggle", isChecked);
+    return data;
+  };
+
+  const assignComponent = async (event) => {
+    let value = event.target.value;
+    let flag = event.target.checked;
+    await assignToggle(value);
     if (isEdit && !open) {
       setOpen(true);
       return;
     }
-    isChecked = Object.fromEntries(checkedArray);
-    if (value === "student") {
-      let data = Object.entries(studentDetails);
-      data.map((item) => {
-        item[1] = "";
-      });
-      data = Object.fromEntries(data);
-      isChecked.isStudent = event.target.checked;
-      actions.assignData("studentDetails", data);
-
-      actions.assignData("professionToggle", isChecked);
-      setComponent(<Student />);
-    } else if (value === "professional") {
-      isChecked.isProfessional = event.target.checked;
-      let data = Object.entries(professionalDetails);
-      data.map((item) => {
-        item[1] = "";
-      });
-      data = Object.fromEntries(data);
-      actions.assignData("professionalDetails", data);
-      actions.assignData("professionToggle", isChecked);
-      setComponent(<Professional />);
-    } else if (value === "houseWives") {
-      isChecked.isHouseWive = event.target.checked;
-      actions.assignData("professionToggle", isChecked);
-      setComponent(<HouseWives />);
-    }
-  };
-
-  const handleToggle = async (event) => {
-    let isChecked = { ...professionToggle };
-    let checkedArray = Object.entries(isChecked);
-    checkedArray.map((item) => {
-      return (item[1] = false);
-    });
-    isChecked = Object.fromEntries(checkedArray);
-    if (toggle === "student") {
-      isChecked.isStudent = true;
-      let data = Object.entries(studentDetails);
-      data.map((item) => {
-        item[1] = "";
-      });
-      data = Object.fromEntries(data);
+    if (value === "student" || toggle === "student") {
+      let data = clearField(studentDetails, "isStudent", flag);
       actions.assignData("studentDetails", data);
       setComponent(<Student />);
-    } else if (toggle === "professional") {
-      isChecked.isProfessional = true;
-      let data = Object.entries(professionalDetails);
-      data.map((item) => {
-        item[1] = "";
-      });
-      data = Object.fromEntries(data);
+    } else if (value === "professional" || toggle === "professional") {
+      let data = clearField(professionalDetails, "isProfessional", flag);
       actions.assignData("professionalDetails", data);
       setComponent(<Professional />);
-    } else if (toggle === "houseWives") {
-      isChecked.isHouseWive = true;
+    } else if (value === "houseWives" || toggle === "houseWives") {
+      clearField({}, "isHouseWive", flag);
       setComponent(<HouseWives />);
     }
-    await actions.assignData("professionToggle", isChecked);
     setOpen(false);
   };
 
@@ -148,7 +126,7 @@ const ProfessionalDetails = (props) => {
           <ModalBox
             open={open}
             onClose={() => setOpen(false)}
-            handleToggle={handleToggle}
+            handleToggle={assignComponent}
           />
         ) : null}
       </div>

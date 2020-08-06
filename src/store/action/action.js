@@ -37,6 +37,7 @@ export const handleData = (event, index, detail) => {
       studentDetails,
       professionalDetails,
     } = getState().reducer;
+    
     let name = event.target.name;
     let value = event.target.value;
     if (detail === "personalDetails") {
@@ -53,9 +54,10 @@ export const handleData = (event, index, detail) => {
         dispatch(assignData("studentDetails", studentDetails));
         await dispatch(stepperCheck(name, index, studentDetails));
       } else if (detail === "professional") {
-        professionalDetails[name] = value;
-        dispatch(assignData("professionalDetails", professionalDetails));
-        await dispatch(stepperCheck(name, index, professionalDetails));
+        let data = await professionalDetails;
+        data[name] = value;
+        dispatch(assignData("professionalDetails", data));
+        await dispatch(stepperCheck(name, index, data));
       }
     }
   };

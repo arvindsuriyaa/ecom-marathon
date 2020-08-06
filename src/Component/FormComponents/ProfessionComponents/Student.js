@@ -22,12 +22,10 @@ const Student = (props) => {
     let data = Object.entries(studentDetails);
     async function checkField() {
       let count = await checkEmptyField(data, studentDetails, validationCount);
-
       if (count === data.length) {
         isCompleted[2] = false;
       }
       let professionType = "student";
-
       actions.assignData("profession", professionType);
       actions.assignData("isCompleted", isCompleted);
     }
