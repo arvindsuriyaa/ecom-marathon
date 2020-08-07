@@ -1,9 +1,9 @@
 /* eslint-disable array-callback-return */
 import React, { useState, useEffect } from "react";
 import { RadioGroup, Radio, FormControlLabel } from "@material-ui/core";
-import Student from "./ProfessionComponents/Student";
-import Professional from "./ProfessionComponents/Professional";
-import HouseWives from "./ProfessionComponents/HouseWives";
+import Student from "./professionComponents/Student";
+import Professional from "./professionComponents/Professional";
+import HouseWives from "./professionComponents/HouseWives";
 import { bindDispatch } from "../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";

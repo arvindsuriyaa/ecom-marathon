@@ -35,29 +35,6 @@ export const formStyles = makeStyles({
   },
 });
 
-// export const QontoConnector = withStyles({
-//   alternativeLabel: {
-//     top: 10,
-//     left: "calc(-50% + 16px)",
-//     right: "calc(50% + 16px)",
-//   },
-//   active: {
-//     "& $line": {
-//       borderColor: "blue",
-//     },
-//   },
-//   completed: {
-//     "& $line": {
-//       borderColor: "blue",
-//     },
-//   },
-//   line: {
-//     borderColor: "red",
-//     borderTopWidth: 3,
-//     borderRadius: 1,
-//   },
-// })(StepConnector);
-
 export const CustomAutocomplete = withStyles({
   tag: {
     backgroundColor: "#C1B8B8",

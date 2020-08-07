@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import Table from "./Component/Table";
-import PersonalDetails from "./Component/FormComponents/PersonalDetails";
-import AddressDetails from "./Component/FormComponents/AddressDetails";
-import ProfessionalDetails from "./Component/FormComponents/ProfessionalDetails";
+import Table from "./component/Table";
+import PersonalDetails from "./component/FormComponents/PersonalDetails";
+import AddressDetails from "./component/FormComponents/AddressDetails";
+import ProfessionalDetails from "./component/FormComponents/ProfessionalDetails";
 import * as directory from "./utils/RootDirectory";
 import {
   BrowserRouter as Router,
@@ -10,7 +10,7 @@ import {
   Switch,
   Redirect,
 } from "react-router-dom";
-import Form from "./Component/Form";
+import Form from "./component/Form";
 const Root = () => {
   return (
     <Router>

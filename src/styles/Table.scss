@@ -82,18 +82,9 @@
 .tableDeleteButton {
   display: none;
 }
-.ReactTable .rt-th,
-.ReactTable .rt-td {
-  // padding: 7px;
-}
 .ReactTable .rt-tbody .rt-tr-group:hover .tableDeleteButton {
   display: inline-block;
 }
-// .tableDeleteButton
-// .MuiButton-root {
-//   padding: 0px !important;
-// }
-
 .ReactTable .rt-tr {
   display: flex;
   justify-content: center;

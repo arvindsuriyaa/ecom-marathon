@@ -120,10 +120,8 @@ export const checkEmptyField = (data, formDetails, validationCount) => {
       data.map((item) => {
         function keyCheck(detail) {
           if (typeof detail[1] === "string") {
-            if (!detail[1].length) {
-              if (flag) {
-                stepperCheck += 1;
-              }
+            if (!detail[1].length && flag) {
+              stepperCheck += 1;
               return;
             }
           } else if (typeof detail[1] === "boolean") {
@@ -132,10 +130,8 @@ export const checkEmptyField = (data, formDetails, validationCount) => {
             }
             if (detail[0] === "isOthers") {
               flag = false;
-              if (detail[1]) {
-                if (!formDetails["other"].length) {
-                  sample += 1;
-                }
+              if (detail[1] && !formDetails["other"].length) {
+                sample += 1;
               }
             }
             return;
