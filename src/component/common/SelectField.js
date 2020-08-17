@@ -2,7 +2,6 @@ import React from "react";
 import { Select, MenuItem } from "@material-ui/core";
 
 const SelectField = (props) => {
-  console.log(props);
   return (
     <Select
       name={props.name}

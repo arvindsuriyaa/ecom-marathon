@@ -50,9 +50,7 @@ const AddressDetails = (props) => {
             label="Address"
             name="address"
             value={addressDetails.address}
-            onChange={(event) =>
-              handleData(event, index, detail, addressDetails, userInfo)
-            }
+            onChange={(event) => handleData(event, index, detail, userInfo)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -61,9 +59,7 @@ const AddressDetails = (props) => {
             label="Country"
             name="country"
             value={addressDetails.country}
-            onChange={(event) =>
-              handleData(event, index, detail, addressDetails, userInfo)
-            }
+            onChange={(event) => handleData(event, index, detail, userInfo)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -77,7 +73,7 @@ const AddressDetails = (props) => {
               name="stateId"
               value={addressDetails.stateId}
               onChange={async (event) => {
-                handleData(event, index, detail, addressDetails, userInfo);
+                handleData(event, index, detail, userInfo);
                 addressDetails["districtId"] = null;
                 actions.assignData("addressDetails", addressDetails);
                 await assignDistrict(addressDetails.stateId);
@@ -99,7 +95,7 @@ const AddressDetails = (props) => {
               name="districtId"
               value={addressDetails.districtId}
               onChange={(event) => {
-                handleData(event, index, detail, addressDetails, userInfo);
+                handleData(event, index, detail, userInfo);
               }}
               data={district}
               disabled={addressDetails.stateId === null}
@@ -112,9 +108,7 @@ const AddressDetails = (props) => {
             label="Pincode"
             name="pincode"
             value={addressDetails.pincode}
-            onChange={(event) =>
-              handleData(event, index, detail, addressDetails, userInfo)
-            }
+            onChange={(event) => handleData(event, index, detail, userInfo)}
           />
         </Grid>
       </Grid>

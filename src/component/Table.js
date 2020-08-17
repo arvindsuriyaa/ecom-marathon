@@ -9,7 +9,8 @@ import ColumnData from "./TableComponents/ColumnData";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import bindDispatch from "../utils/bindDispatch";
-import * as apiReq from "../utils/api/GetAPI";
+import * as apiReq from "../utils/api/getAPI";
+import DialogBox from "../component/common/DialogBox";
 import { deleteAPI } from "../utils/api/deleteApi";
 import _ from "lodash";
 import { defaultState } from "../utils/productSeed";
@@ -20,7 +21,7 @@ class Table extends Component {
     this.state = {
       userCollection: [],
       column: [],
-      noDataDisplay: "No Data Found",
+      showStatus: <CircularProgress />,
       showAction: false,
       rowIndex: null,
       searchInput: "",
@@ -46,7 +47,6 @@ class Table extends Component {
     let res = await apiReq.getAllUsers();
     let clonedArray = _.cloneDeep(res.data);
     let filterData = [];
-    // eslint-disable-next-line array-callback-return
     clonedArray.map((value) => {
       if (!searchInput) {
         return filterData.push(value);
@@ -153,7 +153,7 @@ class Table extends Component {
   handleDelete = async (row) => {
     const { userCollection } = this.state;
     let userInfo = [...userCollection];
-    let res = await deleteAPI(row.original.id);
+    await deleteAPI(row.original.id);
     userInfo.splice(row.index, 1);
     this.setState({ userCollection: userInfo }, () => {
       this.updateColumn();
@@ -169,25 +169,25 @@ class Table extends Component {
       handleDelete: this.handleDelete,
       handleEdit: this.handleEdit,
     };
-    this.setState({ column: ColumnData(columnDetails) });
+    this.setState({
+      column: ColumnData(columnDetails),
+      showStatus: `No data Found`,
+    });
   };
 
   async componentDidMount() {
-    let res = await apiReq.getAllUsers();
-    console.log(res.request.status);
-    if (res.request.status === 201){
-
+    let response = await apiReq.getAllUsers();
+    if (response.request.status === 201) {
       this.setState(
         {
-          userCollection: res.data,
-          apiData: res.data,
+          userCollection: response.data,
         },
         () => {
           this.updateColumn();
         }
       );
-    }else{
-      this.setState({noDataDisplay:`Error:${res.request.status} Cannot Fetch Data`})
+    } else {
+      this.setState({ showStatus: <DialogBox size={100} /> });
     }
   }
 
@@ -196,41 +196,51 @@ class Table extends Component {
     const { userCollection } = this.state;
     return (
       <div>
-        <div className={styles.title}>
-          <h2>Individual List({userCollection.length})</h2>
-          <div className={styles.filterSection}>
-            <span className={styles.search}>
-              <i className="fas fa-search"></i>
-            </span>
-            <input
-              type="text"
-              name="searchInput"
-              value={this.state.searchInput || ""}
-              className={styles.searchFilter}
-              onChange={this.handleSearchFilter}
-              placeholder="Search...."
-            />
-            <Button
-              className={styles.addNew}
-              onClick={() => history.push("/Form")}
-            >
-              +Add New
-            </Button>
-          </div>
-        </div>
-        {userCollection.length ? (
-          <ReactTable
-            data={this.state.userCollection}
-            onSortedChange={(props) => this.handleSort(props)}
-            minRows={0}
-            showPagination={false}
-            NoDataComponent={() => null}
-            columns={this.state.column}
-          />
+        {this.state.showStatus === "No data Found" ? (
+          <>
+            <div className={styles.title}>
+              <h2>Individual List({userCollection.length})</h2>
+              <div className={styles.filterSection}>
+                <span className={styles.search}>
+                  <i className="fas fa-search"></i>
+                </span>
+                <input
+                  type="text"
+                  name="searchInput"
+                  value={this.state.searchInput || ""}
+                  className={styles.searchFilter}
+                  onChange={this.handleSearchFilter}
+                  placeholder="Search...."
+                  disabled={this.state.showStatus !== "No data Found"}
+                />
+                <Button
+                  className={styles.addNew}
+                  onClick={() => history.push("/Form")}
+                  disabled={this.state.showStatus !== "No data Found"}
+                >
+                  +Add New
+                </Button>
+              </div>
+            </div>
+            {userCollection.length ? (
+              <ReactTable
+                data={this.state.userCollection}
+                onSortedChange={(props) => this.handleSort(props)}
+                minRows={0}
+                showPagination={false}
+                NoDataComponent={() => null}
+                columns={this.state.column}
+              />
+            ) : (
+              <center>
+                <h1>{this.state.showStatus}</h1>
+              </center>
+            )}
+          </>
         ) : (
-          <center>
-            <h1>{this.state.noDataDisplay}</h1>
-          </center>
+          <div className={styles.progress}>
+            <h1>{this.state.showStatus}</h1>
+          </div>
         )}
       </div>
     );

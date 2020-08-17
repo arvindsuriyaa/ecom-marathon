@@ -37,6 +37,7 @@ const Student = (props) => {
   };
 
   useEffect(() => {
+    assignDistrict(qualificationDetails.stateId);
     stepperCheck("student", index, userInfo);
   }, []);
 
@@ -117,7 +118,6 @@ const Student = (props) => {
             <SelectField
               name="stateId"
               value={qualificationDetails.stateId}
-              data={apiData.state}
               onChange={async (event) => {
                 handleData(event, index, detail, userInfo);
                 qualificationDetails["districtId"] = null;
@@ -127,6 +127,7 @@ const Student = (props) => {
                 );
                 await assignDistrict(qualificationDetails.stateId);
               }}
+              data={apiData.state}
             />
           </FormControl>
         </Grid>
@@ -141,11 +142,11 @@ const Student = (props) => {
             </InputLabel>
             <SelectField
               name="districtId"
-              value={qualificationDetails.districtId}
-              data={district}
+              value={districtId}
               onChange={(event) => {
                 handleData(event, index, detail, userInfo);
               }}
+              data={district}
               disabled={qualificationDetails.stateId === null}
             />
           </FormControl>

@@ -2,7 +2,6 @@ import React from "react";
 import { Container, Button } from "@material-ui/core";
 
 const Footer = (props) => {
-  console.log("footer props=======>", props);
   return (
     <Container className="form">
       <Button

@@ -13,12 +13,11 @@ import StepperBox from "./common/StepperBox";
 import Footer from "./common/Footer";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import _ from "lodash";
+import DialogBox from "../component/common/DialogBox";
 import { updateUser } from "../utils/api/putApi";
-import * as apiData from "../utils/api/GetAPI";
+import * as apiData from "../utils/api/getAPI";
 import * as post from "../utils/api/postApi";
-import * as apiReq from "../utils/api/GetAPI";
 import { withRouter } from "react-router-dom";
-import "../styles/stepper.scss";
 
 const Form = (props) => {
   const [activeStep, setActiveStep] = useState(0);
@@ -38,6 +37,7 @@ const Form = (props) => {
   let validationCount = 0;
   let state = _.cloneDeep(defaultState);
   const [seed, setSeed] = useState({});
+  const [status, setStatus] = useState(<CircularProgress size={70} />);
 
   useEffect(() => {
     let steps = [0, 1, 2];
@@ -65,32 +65,29 @@ const Form = (props) => {
   }, []);
 
   const fetchApi = async () => {
-    let addressType = await apiData.getAddress();
-    let salary = await apiData.getAnnumSalary();
-    let knowProduct = await apiData.knowProduct();
-    let getGender = await apiData.getGender();
-    let getLevel = await apiData.getLevel();
-    let getStates = await apiData.getStates();
-    let qualification = await apiData.getQualification();
-    let userRole = await apiData.getUserRole();
-    let getLanguage = await apiData.getLanguage();
-    let personalDetailsAPI = {},
-      addressDetailsAPI = {},
-      qualificationAPI = {};
-    personalDetailsAPI.gender = getGender.data;
-    personalDetailsAPI.language = getLanguage.data;
-    personalDetailsAPI.knowProduct = knowProduct.data;
-    addressDetailsAPI.addressType = addressType.data;
-    addressDetailsAPI.state = getStates.data;
-    qualificationAPI.annualSalary = salary.data;
-    qualificationAPI.gender = getGender.data;
-    qualificationAPI.level = getLevel.data;
-    qualificationAPI.state = getStates.data;
-    qualificationAPI.qualification = qualification.data;
-    qualificationAPI.userRoles = userRole.data;
-    assignSeed("personalDetailsAPI", personalDetailsAPI);
-    assignSeed("addressDetailsAPI", addressDetailsAPI);
-    assignSeed("qualificationAPI", qualificationAPI);
+    let getData = await apiData.getAll();
+    if (Array.isArray(getData)) {
+      let personalDetailsAPI = {},
+        addressDetailsAPI = {},
+        qualificationAPI = {};
+      personalDetailsAPI.gender = getData[3].data;
+      personalDetailsAPI.language = getData[8].data;
+      personalDetailsAPI.knowProduct = getData[2].data;
+      addressDetailsAPI.addressType = getData[0].data;
+      addressDetailsAPI.state = getData[5].data;
+      qualificationAPI.annualSalary = getData[1].data;
+      qualificationAPI.level = getData[4].data;
+      qualificationAPI.state = getData[5].data;
+      qualificationAPI.qualification = getData[6].data;
+      qualificationAPI.userRoles = getData[7].data;
+      assignSeed("personalDetailsAPI", personalDetailsAPI);
+      assignSeed("addressDetailsAPI", addressDetailsAPI);
+      assignSeed("qualificationAPI", qualificationAPI);
+    } else {
+      if (getData.request.status === 0) {
+        setStatus(<DialogBox />);
+      }
+    }
   };
   const assignSeed = (name, value) => {
     seed[name] = value;
@@ -112,7 +109,7 @@ const Form = (props) => {
     if (!errors.name && !errors.mailId) {
       const { isEdit } = reducer;
       if (isEdit) {
-        let res = await apiReq.getUsersById(personalDetails.id);
+        let res = await apiData.getUsersById(personalDetails.id);
         let editInfo = res.data;
         personalDetails.token = editInfo.token;
         personalDetails.isDeleted = editInfo.isDeleted;
@@ -195,9 +192,7 @@ const Form = (props) => {
   }, [history.action]);
 
   return !Object.entries(seed).length ? (
-    <div className={classes.progress}>
-      <CircularProgress size={70} />
-    </div>
+    <div className={classes.progress}>{status}</div>
   ) : (
     <div id="wrapper">
       <Container className={classes.container}>
