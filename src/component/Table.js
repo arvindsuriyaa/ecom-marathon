@@ -1,5 +1,6 @@
+/* eslint-disable array-callback-return */
 import React, { Component } from "react";
-import { Button } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 import "react-table-v6/react-table.css";
 import "../styles/Table.scss";
 import * as styles from "../styles/TableStyles.module.scss";
@@ -8,7 +9,10 @@ import ColumnData from "./TableComponents/ColumnData";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import bindDispatch from "../utils/bindDispatch";
+import * as apiReq from "../utils/api/GetAPI";
+import { deleteAPI } from "../utils/api/deleteApi";
 import _ from "lodash";
+import { defaultState } from "../utils/productSeed";
 
 class Table extends Component {
   constructor(props) {
@@ -16,6 +20,7 @@ class Table extends Component {
     this.state = {
       userCollection: [],
       column: [],
+      noDataDisplay: "No Data Found",
       showAction: false,
       rowIndex: null,
       searchInput: "",
@@ -36,12 +41,12 @@ class Table extends Component {
     this.updateColumn();
   };
 
-  filteredData = () => {
+  filteredData = async () => {
     let { searchInput } = this.state;
-    let { reducer } = this.props;
-    let { userHistory } = reducer;
-    let clonedArray = _.cloneDeep(userHistory);
+    let res = await apiReq.getAllUsers();
+    let clonedArray = _.cloneDeep(res.data);
     let filterData = [];
+    // eslint-disable-next-line array-callback-return
     clonedArray.map((value) => {
       if (!searchInput) {
         return filterData.push(value);
@@ -58,13 +63,13 @@ class Table extends Component {
             }
           }
           if (
-            details[0] === "userName" ||
-            details[0] === "email" ||
-            details[0] === "mobileNumber" ||
+            details[0] === "name" ||
+            details[0] === "mailId" ||
+            details[0] === "mob" ||
             details[0] === "address" ||
             details[0] === "district" ||
             details[0] === "state" ||
-            details[0] === "profession"
+            details[0] === "userRole"
           ) {
             if (typeof details[1] !== "boolean") {
               let val = details[1];
@@ -118,37 +123,39 @@ class Table extends Component {
     });
   };
 
-  handleEdit = (row) => {
+  handleEdit = async (row) => {
     const { actions, history, reducer } = this.props;
-    const { userHistory } = reducer;
-    let editInfo = [...userHistory];
-    let userIndex;
-    editInfo.map((user, indexValue) => {
-      if (user.id === row.original.id) {
-        userIndex = indexValue;
-      }
-    });
-    actions.editData("reducer", editInfo[userIndex]);
+    const { personalDetails } = reducer;
+    let res = await apiReq.getUsersById(row.original.id);
+    await actions.editData("reducer", defaultState);
+    let editInfo = res.data;
+    personalDetails.id = editInfo.id;
+    personalDetails.mailId = editInfo.mailId;
+    personalDetails.name = editInfo.name;
+    personalDetails.age = editInfo.age;
+    personalDetails.mobNo = editInfo.mobNo;
+    personalDetails.genderId = editInfo.genderId;
+    personalDetails.dateOfBirth = editInfo.dateOfBirth;
+    personalDetails.motherTongueId = editInfo.motherTongueId;
+    personalDetails.preferredLanguageId = editInfo.preferredLanguageId;
+    personalDetails.knownViaProducts = editInfo.knownViaProducts;
+    personalDetails.others = editInfo.others;
+    await actions.assignData("personalDetails", personalDetails);
+    await actions.assignData(
+      "qualificationDetails",
+      editInfo.qualificationDetails
+    );
+    await actions.assignData("addressDetails", editInfo.addressDetails);
     actions.assignData("isEdit", true);
     history.push("/Form");
   };
 
   handleDelete = async (row) => {
     const { userCollection } = this.state;
-    const { actions, reducer } = this.props;
-    const { userHistory } = reducer;
     let userInfo = [...userCollection];
-
+    let res = await deleteAPI(row.original.id);
     userInfo.splice(row.index, 1);
-    let userIndex;
-    userHistory.map((user, indexValue) => {
-      if (user.id === row.original.id) {
-        userIndex = indexValue;
-      }
-    });
-    userHistory.splice(userIndex, 1);
     this.setState({ userCollection: userInfo }, () => {
-      actions.assignData("userHistory", userHistory);
       this.updateColumn();
     });
   };
@@ -165,27 +172,32 @@ class Table extends Component {
     this.setState({ column: ColumnData(columnDetails) });
   };
 
-  componentDidMount() {
-    const { reducer } = this.props;
-    const { userHistory } = reducer;
-    this.setState(
-      {
-        userCollection: userHistory,
-      },
-      () => {
-        this.updateColumn();
-      }
-    );
+  async componentDidMount() {
+    let res = await apiReq.getAllUsers();
+    console.log(res.request.status);
+    if (res.request.status === 201){
+
+      this.setState(
+        {
+          userCollection: res.data,
+          apiData: res.data,
+        },
+        () => {
+          this.updateColumn();
+        }
+      );
+    }else{
+      this.setState({noDataDisplay:`Error:${res.request.status} Cannot Fetch Data`})
+    }
   }
 
   render() {
-    const { history, reducer } = this.props;
-    const { userHistory } = reducer;
+    const { history } = this.props;
     const { userCollection } = this.state;
     return (
       <div>
         <div className={styles.title}>
-          <h2>Individual List({userHistory.length})</h2>
+          <h2>Individual List({userCollection.length})</h2>
           <div className={styles.filterSection}>
             <span className={styles.search}>
               <i className="fas fa-search"></i>
@@ -217,7 +229,7 @@ class Table extends Component {
           />
         ) : (
           <center>
-            <h1>NO DATA FOUND</h1>
+            <h1>{this.state.noDataDisplay}</h1>
           </center>
         )}
       </div>

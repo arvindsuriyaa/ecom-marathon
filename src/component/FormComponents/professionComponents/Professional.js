@@ -4,35 +4,20 @@ import { bindDispatch } from "../../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import { professionalForm } from "../../../styles/FormStyles";
-import { salary, level } from "../../../utils/productSeed";
 import SelectField from "../../common/SelectField";
 
 const Professional = (props) => {
   const classes = professionalForm();
-  const { actions, reducer } = props;
-  const { checkEmptyField } = actions;
-  const { handleData } = actions;
-  const { professionalDetails, isCompleted } = reducer;
-  let detail = "professional";
+  const { actions, reducer, apiData } = props;
+  const { handleData, stepperCheck } = actions;
+  const { qualificationDetails } = reducer;
+  let detail = "qualificationDetails";
   let index = 2;
+  const { annumSal, levelId } = qualificationDetails;
+  const userInfo = { annumSal, levelId };
 
   useEffect(() => {
-    let data = Object.entries(professionalDetails);
-    let validationCount = 0;
-    async function checkField() {
-      let count = await checkEmptyField(
-        data,
-        professionalDetails,
-        validationCount
-      );
-      if (count === data.length) {
-        isCompleted[2] = false;
-      }
-      let professionType = "professional";
-      actions.assignData("profession", professionType);
-      actions.assignData("isCompleted", isCompleted);
-    }
-    checkField();
+    stepperCheck("student", index, userInfo);
   }, []);
 
   return (
@@ -42,16 +27,16 @@ const Professional = (props) => {
           <FormControl
             variant="filled"
             className={classes.formControl}
-            fullWidth="true"
+            fullWidth={true}
           >
             <InputLabel id="demo-simple-select-filled-label">
               Salary Per Annum
             </InputLabel>
             <SelectField
-              name="salary"
-              value={professionalDetails.salary}
-              onChange={(event) => handleData(event, index, detail)}
-              data={salary}
+              name="annumSal"
+              value={qualificationDetails.annumSal}
+              onChange={(event) => handleData(event, index, detail, userInfo)}
+              data={apiData.annualSalary}
             />
           </FormControl>
         </Grid>{" "}
@@ -59,14 +44,14 @@ const Professional = (props) => {
           <FormControl
             variant="filled"
             className={classes.formControl}
-            fullWidth="true"
+            fullWidth={true}
           >
             <InputLabel id="demo-simple-select-filled-label">Level</InputLabel>
             <SelectField
-              name="level"
-              value={professionalDetails.level}
-              onChange={(event) =>  handleData(event, index, detail)}
-              data={level}
+              name="levelId"
+              value={qualificationDetails.levelId}
+              onChange={(event) => handleData(event, index, detail, userInfo)}
+              data={apiData.level}
             />
           </FormControl>
         </Grid>

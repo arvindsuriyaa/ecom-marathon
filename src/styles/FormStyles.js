@@ -1,9 +1,15 @@
-import { makeStyles, withStyles} from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 export const formStyles = makeStyles({
   container: {
     height: "830px",
+  },
+  progress: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "90vh",
   },
   root: {
     display: "flex",

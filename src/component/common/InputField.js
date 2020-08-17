@@ -5,13 +5,14 @@ const InputField = (props) => {
   return (
     <TextField
       error={props.error}
+      disabled={props.disabled}
       helperText={props.helperText}
       type={props.type}
       value={props.value}
       label={props.label}
       name={props.name}
       variant="filled"
-      fullWidth="true"
+      fullWidth={true}
       onChange={props.onChange}
     />
   );

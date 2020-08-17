@@ -1,36 +1,55 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FormControl, InputLabel, Grid } from "@material-ui/core";
 import InputField from "../../common/InputField";
 import { bindDispatch } from "../../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import { studentForm } from "../../../styles/FormStyles";
-import { graduateLevel, state, district } from "../../../utils/productSeed";
 import SelectField from "../../common/SelectField";
+import instance from "../../../utils/api/apiAction";
 
 const Student = (props) => {
-  const { actions, reducer } = props;
-  const { checkEmptyField } = actions;
-  const { handleData } = actions;
-  const { studentDetails, isCompleted } = reducer;
+  const { actions, reducer, apiData } = props;
+  const { handleData, stepperCheck } = actions;
+  const { qualificationDetails } = reducer;
+  const {
+    userQualificationId,
+    studyingAt,
+    stateId,
+    pincode,
+    institutionName,
+    institutionAddress,
+    districtId,
+    country,
+  } = qualificationDetails;
   const classes = studentForm();
-  let detail = "student";
+  let detail = "qualificationDetails";
   let index = 2;
+  let userInfo = {
+    userQualificationId,
+    studyingAt,
+    stateId,
+    pincode,
+    institutionName,
+    institutionAddress,
+    districtId,
+    country,
+  };
 
   useEffect(() => {
-    let validationCount = 0;
-    let data = Object.entries(studentDetails);
-    async function checkField() {
-      let count = await checkEmptyField(data, studentDetails, validationCount);
-      if (count === data.length) {
-        isCompleted[2] = false;
-      }
-      let professionType = "student";
-      actions.assignData("profession", professionType);
-      actions.assignData("isCompleted", isCompleted);
-    }
-    checkField();
+    stepperCheck("student", index, userInfo);
   }, []);
+
+  const [district, setDistrict] = useState([]);
+
+  const assignDistrict = async (id) => {
+    if (id) {
+      let districtCollection = await instance.get(`/districts/${id}`);
+      setDistrict(districtCollection.data);
+    } else {
+      setDistrict([]);
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -39,16 +58,16 @@ const Student = (props) => {
           <FormControl
             variant="filled"
             className={classes.formControl}
-            fullWidth="true"
+            fullWidth={true}
           >
             <InputLabel id="demo-simple-select-filled-label">
               Current Qualification
             </InputLabel>
             <SelectField
-              name="qualification"
-              value={studentDetails.qualification}
-              onChange={(event) => handleData(event, index, detail)}
-              data={graduateLevel}
+              name="userQualificationId"
+              value={qualificationDetails.userQualificationId}
+              onChange={(event) => handleData(event, index, detail, userInfo)}
+              data={apiData.qualification}
             />
           </FormControl>
         </Grid>
@@ -56,27 +75,27 @@ const Student = (props) => {
           <InputField
             type="text"
             label="Institution Name"
-            name="institution"
-            value={studentDetails.institution}
-            onChange={(event) => handleData(event, index, detail)}
+            name="institutionName"
+            value={qualificationDetails.institutionName}
+            onChange={(event) => handleData(event, index, detail, userInfo)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <InputField
             type="text"
             label="Studying at"
-            name="class"
-            value={studentDetails.class}
-            onChange={(event) => handleData(event, index, detail)}
+            name="studyingAt"
+            value={qualificationDetails.studyingAt}
+            onChange={(event) => handleData(event, index, detail, userInfo)}
           />
         </Grid>
         <Grid item xs={12} sm={12}>
           <InputField
             type="text"
             label="Institution Address"
-            name="address"
-            value={studentDetails.address}
-            onChange={(event) => handleData(event, index, detail)}
+            name="institutionAddress"
+            value={qualificationDetails.institutionAddress}
+            onChange={(event) => handleData(event, index, detail, userInfo)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -84,22 +103,30 @@ const Student = (props) => {
             type="text"
             label="Country"
             name="country"
-            value={studentDetails.country}
-            onChange={(event) => handleData(event, index, detail)}
+            value={qualificationDetails.country}
+            onChange={(event) => handleData(event, index, detail, userInfo)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl
             variant="filled"
             className={classes.formControl}
-            fullWidth="true"
+            fullWidth={true}
           >
             <InputLabel id="demo-simple-select-filled-label">State</InputLabel>
             <SelectField
-              name="state"
-              value={studentDetails.state}
-              onChange={(event) => handleData(event, index, detail)}
-              data={state}
+              name="stateId"
+              value={qualificationDetails.stateId}
+              data={apiData.state}
+              onChange={async (event) => {
+                handleData(event, index, detail, userInfo);
+                qualificationDetails["districtId"] = null;
+                actions.assignData(
+                  "qualificationDetails",
+                  qualificationDetails
+                );
+                await assignDistrict(qualificationDetails.stateId);
+              }}
             />
           </FormControl>
         </Grid>
@@ -107,26 +134,29 @@ const Student = (props) => {
           <FormControl
             variant="filled"
             className={classes.formControl}
-            fullWidth="true"
+            fullWidth={true}
           >
             <InputLabel id="demo-simple-select-filled-label">
               District
             </InputLabel>
             <SelectField
-              name="district"
-              value={studentDetails.district}
-              onChange={(event) => handleData(event, index, detail)}
+              name="districtId"
+              value={qualificationDetails.districtId}
               data={district}
+              onChange={(event) => {
+                handleData(event, index, detail, userInfo);
+              }}
+              disabled={qualificationDetails.stateId === null}
             />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
           <InputField
-            type="text"
+            type="number"
             label="Pincode"
             name="pincode"
-            value={studentDetails.pincode}
-            onChange={(event) => handleData(event, index, detail)}
+            value={qualificationDetails.pincode}
+            onChange={(event) => handleData(event, index, detail, userInfo)}
           />
         </Grid>
       </Grid>

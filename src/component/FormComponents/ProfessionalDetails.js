@@ -11,70 +11,89 @@ import { professionStyle } from "../../styles/FormStyles";
 import ModalBox from "../common/ModalBox";
 
 const ProfessionalDetails = (props) => {
-  const { actions, reducer } = props;
+  const { actions, reducer, apiData } = props;
+  const { qualificationDetails } = reducer;
+  const { isEdit } = reducer;
   const {
-    professionToggle,
-    studentDetails,
-    professionalDetails,
-    isEdit,
-  } = reducer;
+    userRoleId,
+    userQualificationId,
+    institutionName,
+    institutionAddress,
+    country,
+    studyingAt,
+    stateId,
+    districtId,
+    pincode,
+    levelId,
+    annumSal,
+  } = qualificationDetails;
   const [component, setComponent] = useState();
   const [toggle, setToggle] = useState("");
   const [open, setOpen] = useState(false);
+  const professionalDetails = {
+    userRoleId,
+    userQualificationId,
+    institutionName,
+    institutionAddress,
+    country,
+    studyingAt,
+    stateId,
+    districtId,
+    pincode,
+    levelId,
+    annumSal,
+  };
 
   useEffect(() => {
-    if (professionToggle.isStudent) {
-      setComponent(<Student />);
-    } else if (professionToggle.isProfessional) {
-      setComponent(<Professional />);
-    } else if (professionToggle.isHouseWive) {
-      setComponent(<HouseWives />);
+    if (qualificationDetails.userRoleId === 1) {
+      setComponent(<Student {...props} />);
+    } else if (qualificationDetails.userRoleId === 2) {
+      setComponent(<Professional {...props} />);
+    } else if (qualificationDetails.userRoleId === 3) {
+      setComponent(<HouseWives {...props} />);
     }
-  }, []);
+  }, [props]);
 
   const assignToggle = async (value) => {
     setToggle(value);
   };
-  const clearField = async (record, isData, flag) => {
-    let isChecked = { ...professionToggle };
-    let checkedArray = Object.entries(isChecked);
-    checkedArray.map((item) => {
-      return (item[1] = false);
-    });
-    isChecked = Object.fromEntries(checkedArray);
+  const clearField = async (record) => {
     let data = Object.entries(record);
     data.map((item) => {
-      item[1] = "";
+      if (typeof item[1] === "string") {
+        item[1] = "";
+      } else if (typeof item[1] === "number" || typeof item[1] === "object") {
+        item[1] = null;
+      }
     });
     data = Object.fromEntries(data);
-    if (!isEdit) {
-      isChecked[isData] = flag;
-    } else {
-      isChecked[isData] = true;
-    }
-    await actions.assignData("professionToggle", isChecked);
     return data;
   };
 
   const assignComponent = async (event) => {
-    let value = event.target.value;
-    let flag = event.target.checked;
-    await assignToggle(value);
+    let value, data;
+    value = Number(event.target.value);
+    data = await clearField(professionalDetails);
+    data.id = qualificationDetails.id;
+    data.userId = qualificationDetails.userId;
+    if (value) {
+      data["userRoleId"] = value;
+    } else {
+      data["userRoleId"] = toggle;
+    }
+
     if (isEdit && !open) {
+      await assignToggle(value);
       setOpen(true);
       return;
     }
-    if (value === "student" || toggle === "student") {
-      let data = clearField(studentDetails, "isStudent", flag);
-      actions.assignData("studentDetails", data);
-      setComponent(<Student />);
-    } else if (value === "professional" || toggle === "professional") {
-      let data = clearField(professionalDetails, "isProfessional", flag);
-      actions.assignData("professionalDetails", data);
-      setComponent(<Professional />);
-    } else if (value === "houseWives" || toggle === "houseWives") {
-      clearField({}, "isHouseWive", flag);
-      setComponent(<HouseWives />);
+    await actions.assignData("qualificationDetails", { ...data });
+    if (value === 1 || toggle === 1) {
+      setComponent(<Student {...props} />);
+    } else if (value === 2 || toggle === 2) {
+      setComponent(<Professional {...props} />);
+    } else if (value === 3 || toggle === 3) {
+      setComponent(<HouseWives {...props} />);
     }
     setOpen(false);
   };
@@ -84,42 +103,22 @@ const ProfessionalDetails = (props) => {
     <div className={classes.root}>
       <div className={classes.radioRoute}>
         <RadioGroup row className={classes.alignRadio}>
-          <FormControlLabel
-            value="student"
-            control={
-              <Radio
-                color="primary"
-                value="student"
-                checked={professionToggle.isStudent}
-                onChange={(event) => assignComponent(event)}
-              />
-            }
-            label="Student"
-          />
-          <FormControlLabel
-            value="professional"
-            control={
-              <Radio
-                color="primary"
-                value="professional"
-                checked={professionToggle.isProfessional}
-                onChange={(event) => assignComponent(event)}
-              />
-            }
-            label="Professional"
-          />
-          <FormControlLabel
-            value="houseWives"
-            control={
-              <Radio
-                color="primary"
-                value="houseWives"
-                checked={professionToggle.isHouseWive}
-                onChange={(event) => assignComponent(event)}
-              />
-            }
-            label="HouseWives"
-          />
+          {apiData.userRoles &&
+            apiData.userRoles.map((role) => {
+              return (
+                <FormControlLabel
+                  control={
+                    <Radio
+                      color="primary"
+                      value={role.id}
+                      checked={qualificationDetails.userRoleId === role.id}
+                      onChange={(event) => assignComponent(event)}
+                    />
+                  }
+                  label={role.name}
+                />
+              );
+            })}
         </RadioGroup>
         {open ? (
           <ModalBox

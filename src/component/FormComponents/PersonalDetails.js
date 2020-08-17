@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Grid,
   TextField,
@@ -15,37 +15,83 @@ import { createSelector } from "reselect";
 import { bindDispatch } from "../../utils";
 import { connect } from "react-redux";
 import { CustomAutocomplete, personalStyle } from "../../styles/FormStyles";
-import { marketingMedium } from "../../utils/productSeed";
 import DateField from "../common/DateField";
 import RadioButton from "../common/RadioButton";
 import SelectField from "../common/SelectField";
 
 const PersonalDetails = (props) => {
   const classes = personalStyle();
-  const { actions, reducer } = props;
-  const { handleData, handleCheckbox } = actions;
+  const { actions, reducer, apiData } = props;
+  const { handleData, handleCheckbox, stepperCheck } = actions;
   const { personalDetails, errors, emailCheck } = reducer;
-  const { knowProduct } = personalDetails;
   let index = 0;
   let detail = "personalDetails";
+  let chosenLang = [];
 
-  const onTagsChange = (event, values) => {
-    personalDetails["languageTags"] = values;
+  useEffect(() => {
+    stepperCheck("personalDetails", index, personalDetails);
+  }, []);
+
+  const onTagsChange = (event, value) => {
+    let lang = [];
+    apiData.language.map((item) => {
+      value.map((val) => {
+        if (val === item.name) {
+          return lang.push(item.id);
+        }
+      });
+    });
+    personalDetails["preferredLanguageId"] = lang;
+    stepperCheck("preferredLanguageId", index, personalDetails);
     actions.assignData("personalDetails", personalDetails);
   };
+
+  const handleDate = (value) => {
+    if (value !== null) {
+      const formattedDate = `${value.getFullYear()}-${
+        value.getMonth() + 1
+      }-${value.getDate()}`;
+      personalDetails["dateOfBirth"] = formattedDate;
+      if (personalDetails["dateOfBirth"] === "NaN-NaN-NaN") {
+        personalDetails["dateOfBirth"] = null;
+      }
+      actions.assignData("personalDetails", personalDetails);
+      stepperCheck("personalDetails", index, personalDetails);
+    }
+  };
+  const formatDate = (dateStr) => {
+    if (dateStr !== null) {
+      const date = new Date(dateStr);
+      return date;
+    }
+    return null;
+  };
+
+  if (apiData.language.length) {
+    apiData.language.filter((item) => {
+      personalDetails.preferredLanguageId.map((value) => {
+        if (value === item.id) {
+          chosenLang.push(item.name);
+        }
+      });
+      return chosenLang;
+    });
+  }
 
   return (
     <div className={classes.userRoot}>
       <Grid className={classes.grid} container spacing={3}>
         <Grid item xs={12} sm={6}>
           <InputField
-            error={errors.userName}
-            helperText={errors.userName ? "*This Field is Mandatory" : ""}
+            error={errors.name}
+            helperText={errors.name ? "*This Field is Mandatory" : ""}
             type="text"
             label="User Name"
-            name="userName"
-            value={personalDetails.userName || ""}
-            onChange={(event) => handleData(event, index, detail)}
+            name="name"
+            value={personalDetails.name || ""}
+            onChange={(event) =>
+              handleData(event, index, detail, personalDetails)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6} className={classes.alignCenter}>
@@ -56,39 +102,33 @@ const PersonalDetails = (props) => {
             className={classes.alignRadio}
           >
             <FormLabel component="legend">Gender</FormLabel>
-            <FormControlLabel
-              value="male"
-              control={
-                <RadioButton
-                  name="gender"
-                  value="male"
-                  checked={personalDetails["gender"] === "male"}
-                  onChange={(event) => handleData(event, index, detail)}
-                />
-              }
-              label="Male"
-            />
-            <FormControlLabel
-              value="female"
-              control={
-                <RadioButton
-                  name="gender"
-                  value="female"
-                  checked={personalDetails["gender"] === "female"}
-                  onChange={(event) => handleData(event, index, detail)}
-                />
-              }
-              label="Female"
-            />
+            {apiData.gender &&
+              apiData.gender.map((item, index) => {
+                if (item.id < 3) {
+                  return (
+                    <FormControlLabel
+                      key={index}
+                      value={item.id}
+                      control={
+                        <RadioButton
+                          name="genderId"
+                          checked={Number(personalDetails.genderId) === item.id}
+                          onChange={(event) =>
+                            handleData(event, index, detail, personalDetails)
+                          }
+                        />
+                      }
+                      label={item.name}
+                    />
+                  );
+                }
+              })}
           </RadioGroup>
         </Grid>
         <Grid item xs={12} sm={6}>
           <DateField
-            value={personalDetails.dob}
-            onChange={(date) => {
-              personalDetails["dob"] = date;
-              actions.assignData("personalDetails", personalDetails);
-            }}
+            value={formatDate(personalDetails.dateOfBirth)}
+            onChange={(date) => handleDate(date)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -97,68 +137,79 @@ const PersonalDetails = (props) => {
             label="Age"
             name="age"
             value={personalDetails.age}
-            onChange={(event) => handleData(event, index, detail)}
+            onChange={(event) =>
+              handleData(event, index, detail, personalDetails)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <InputField
             type="text"
             label="Mail Id"
-            name="email"
-            error={errors.email}
+            name="mailId"
+            error={errors.mailId}
+            disabled={reducer.isEdit}
             helperText={
-              errors.email
-                ? !personalDetails.email
+              errors.mailId
+                ? !personalDetails.mailId
                   ? "*This Field is Mandatory"
                   : emailCheck
                   ? "*This Email ID already Exists"
                   : "*Invalid Email"
                 : ""
             }
-            value={personalDetails.email}
-            onChange={(event) => handleData(event, index, detail)}
+            value={personalDetails.mailId}
+            onChange={(event) =>
+              handleData(event, index, detail, personalDetails)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <InputField
             type="number"
             label="Mobile no"
-            name="mobileNumber"
-            value={personalDetails.mobileNumber}
-            onChange={(event) => handleData(event, index, detail)}
+            name="mobNo"
+            value={personalDetails.mobNo}
+            onChange={(event) =>
+              handleData(event, index, detail, personalDetails)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl
             variant="filled"
             className={classes.formControl}
-            fullWidth="true"
+            fullWidth={true}
           >
             <InputLabel>Mother Tongue</InputLabel>
             <SelectField
-              name="motherTongue"
-              value={personalDetails.motherTongue}
-              onChange={(event) => handleData(event, index, detail)}
-              data={["English", "Tamil", "Hindi", "Malayalam"]}
+              name="motherTongueId"
+              value={personalDetails.motherTongueId}
+              onChange={(event) =>
+                handleData(event, index, detail, personalDetails)
+              }
+              data={apiData.language}
             />
           </FormControl>
         </Grid>
         <Grid item sm={12}>
-          <CustomAutocomplete
-            multiple
-            id="tags-standard"
-            value={personalDetails.languageTags}
-            name="languageTags"
-            options={["English", "Hindi", "Telugu", "Malayalam"]}
-            onChange={(event, values) => onTagsChange(event, values)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="filled"
-                label="Prefered Language for app"
-              />
-            )}
-          />
+          {apiData.language && (
+            <CustomAutocomplete
+              multiple
+              id="tags-standard"
+              value={chosenLang}
+              name="preferredLanguageId"
+              options={apiData.language.map((item) => item.name)}
+              onChange={(event, value) => onTagsChange(event, value)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="filled"
+                  label="Prefered Language for app"
+                />
+              )}
+            />
+          )}
         </Grid>
         <Grid item sm={12}>
           <Typography className={classes.Typography}>
@@ -169,43 +220,68 @@ const PersonalDetails = (props) => {
           <FormControlLabel
             control={
               <Checkbox
-                checked={personalDetails.knowProduct.isNews}
-                onChange={(event) => handleCheckbox(event, index, detail)}
-                name="isNews"
+                checked={
+                  apiData.knowProduct &&
+                  personalDetails.knownViaProducts.includes(
+                    apiData.knowProduct[0].id
+                  )
+                }
+                onChange={(event) =>
+                  handleCheckbox(
+                    event,
+                    index,
+                    detail,
+                    apiData.knowProduct[0].id
+                  )
+                }
                 color="primary"
               />
             }
-            label="News Paper/Ads"
+            label={apiData.knowProduct && apiData.knowProduct[0].name}
           />
         </Grid>
-        {marketingMedium.map((media) => {
-          return (
-            <Grid item sm={2}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={personalDetails.knowProduct[media[1]]}
-                    onChange={(event) => handleCheckbox(event, index, detail)}
-                    name={media[1]}
-                    color="primary"
+        {apiData.knowProduct &&
+          apiData.knowProduct.map((item, index) => {
+            if (item.id > 1) {
+              return (
+                <Grid item sm={2}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        key={index}
+                        checked={
+                          apiData.knowProduct &&
+                          personalDetails.knownViaProducts.includes(item.id)
+                        }
+                        onChange={(event) =>
+                          handleCheckbox(event, index, detail, item.id)
+                        }
+                        color="primary"
+                      />
+                    }
+                    label={item.name}
                   />
-                }
-                label={media[0]}
-              />
-            </Grid>
-          );
-        })}
+                </Grid>
+              );
+            }
+          })}
         <Grid
           item
           sm={12}
-          className={knowProduct.isOthers ? classes.show : classes.hide}
+          className={
+            personalDetails.knownViaProducts.includes(6)
+              ? classes.show
+              : classes.hide
+          }
         >
           <InputField
             type="text"
             label="Other"
-            name="other"
-            value={personalDetails.other}
-            onChange={(event) => handleData(event, index, detail)}
+            name="others"
+            value={personalDetails.others}
+            onChange={(event) =>
+              handleData(event, index, detail, personalDetails)
+            }
           />
         </Grid>
       </Grid>

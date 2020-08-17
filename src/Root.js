@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Table from "./component/Table";
 import PersonalDetails from "./component/FormComponents/PersonalDetails";
 import AddressDetails from "./component/FormComponents/AddressDetails";
@@ -17,25 +17,48 @@ const Root = () => {
       <Switch>
         <Route path={directory.FORM}>
           <Form>
-            <Switch>
-              <Route
-                path={directory.PERSONAL_DETAILS}
-                component={PersonalDetails}
-              />
-              <Route
-                path={directory.ADDRESS_DETAILS}
-                component={AddressDetails}
-              />
-              <Route
-                path={directory.PROFESSIONAL_DETAILS}
-                component={ProfessionalDetails}
-              />
-              <Redirect from={directory.FORM} to={directory.PERSONAL_DETAILS} />
-            </Switch>
+            {(props) => (
+              <Switch>
+                <Route
+                  path={directory.PERSONAL_DETAILS}
+                  render={(prop) => {
+                    const newProps = {
+                      ...prop,
+                      apiData: { ...props.seed.personalDetailsAPI },
+                    };
+                    return <PersonalDetails {...newProps} />;
+                  }}
+                />
+                <Route
+                  path={directory.ADDRESS_DETAILS}
+                  render={(prop) => {
+                    const newProps = {
+                      ...prop,
+                      apiData: { ...props.seed.addressDetailsAPI },
+                    };
+                    return <AddressDetails {...newProps} />;
+                  }}
+                />
+                <Route
+                  path={directory.PROFESSIONAL_DETAILS}
+                  render={(prop) => {
+                    const newProps = {
+                      ...prop,
+                      apiData: { ...props.seed.qualificationAPI },
+                    };
+                    return <ProfessionalDetails {...newProps} />;
+                  }}
+                />
+                <Redirect
+                  from={directory.FORM}
+                  to={directory.PERSONAL_DETAILS}
+                />
+              </Switch>
+            )}
           </Form>
         </Route>
-        <Route path={directory.TABLE} component={Table} />
-        <Redirect exact from="/" to={directory.TABLE} component={Table} />
+        <Route path={directory.TABLE} render={(prop) => <Table {...prop} />} />
+        <Redirect exact from="/" to={directory.TABLE} />
       </Switch>
     </Router>
   );

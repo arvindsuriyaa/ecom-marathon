@@ -5,7 +5,7 @@ import TableActions from "./TableActions";
 
 function ColumnData(props) {
   const { toggleIcon, handleDelete, handleEdit } = props;
-  
+
   return [
     {
       id: "userName",
@@ -17,7 +17,7 @@ function ColumnData(props) {
           </div>
         );
       },
-      accessor: (d) => d.personalDetails.userName,
+      accessor: (d) => d.name,
       width: 160,
       show: true,
     },
@@ -32,7 +32,7 @@ function ColumnData(props) {
           </div>
         );
       },
-      accessor: (d) => d.personalDetails.email,
+      accessor: (d) => d.mailId,
       show: true,
     },
     {
@@ -46,7 +46,7 @@ function ColumnData(props) {
           </div>
         );
       },
-      accessor: (d) => d.personalDetails.mobileNumber,
+      accessor: (d) => d.mob,
       show: true,
     },
     {
@@ -59,7 +59,7 @@ function ColumnData(props) {
           </div>
         );
       },
-      accessor: (d) => d.addressDetails.institutionAddress,
+      accessor: (d) => d.address,
       show: true,
     },
     {
@@ -72,7 +72,7 @@ function ColumnData(props) {
           </div>
         );
       },
-      accessor: (d) => d.addressDetails.district,
+      accessor: (d) => d.district,
       show: true,
     },
     {
@@ -85,7 +85,7 @@ function ColumnData(props) {
           </div>
         );
       },
-      accessor: (d) => d.addressDetails.state,
+      accessor: (d) => d.state,
       width: 150,
       show: true,
     },
@@ -99,7 +99,7 @@ function ColumnData(props) {
           </div>
         );
       },
-      accessor: "profession",
+      accessor: (d) => d.userRole,
       width: 170,
       show: true,
     },

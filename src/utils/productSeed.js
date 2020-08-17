@@ -8,65 +8,40 @@ export const routePath = [
   "/Form/AddressDetails",
   "/Form/ProfessionalDetails",
 ];
-export const marketingMedium = [
-  ["TV Media", "isTv"],
-  ["FaceBook", "isFacebook"],
-  ["Linkedin", "isLinkedin"],
-  ["By Friend", "isFriend"],
-  ["Others", "isOthers"],
-];
-export const state = ["Tamil Nadu", "Kerala", "Andhra Pradesh"];
-export const district = ["Chennai", "Kanchepuram", "Tiruvallur"];
-export const graduateLevel = ["UG", "PG"];
-export const salary = ["1-5 Lakh", "5-10 Lakh", "10-15 Lakh", "Above 15 Lakhs"];
-export const level = ["Junior", "Senior", "Super Senior"];
+
 export const defaultState = {
-  id: null,
   personalDetails: {
-    userName: "",
-    gender: "",
-    dob: null,
+    name: "",
+    genderId: null,
+    dateOfBirth: null,
     age: "",
-    email: "",
-    mobileNumber: "",
-    motherTongue: "",
-    languageTags: [],
-    knowProduct: {
-      isNews: false,
-      isTv: false,
-      isFacebook: false,
-      isLinkedin: false,
-      isFriend: false,
-      isOthers: false,
-    },
-    other: "",
+    mailId: "",
+    mobNo: "",
+    motherTongueId: null,
+    preferredLanguageId: [],
+    knownViaProducts: [],
+    others: "",
   },
-  professionToggle: {
-    isStudent: true,
-    isProfessional: false,
-    isHouseWive: false,
-  },
-  profession: "",
-  studentDetails: {
-    qualification: "",
-    institution: "",
-    class: "",
-    address: "",
-    country: "",
-    state: "",
-    district: "",
-    pincode: "",
-  },
-  professionalDetails: {
-    salary: "",
-    level: "",
-  },
-  addressDetails: {
+  qualificationDetails: {
+    userRoleId: 1,
+    userQualificationId: null,
+    institutionName: "",
     institutionAddress: "",
     country: "",
-    state: "",
-    district: "",
+    studyingAt: "",
+    stateId: null,
+    districtId: null,
+    pincode: null,
+    levelId: null,
+    annumSal: null,
+  },
+  addressDetails: {
+    address: "",
+    stateId: null,
+    districtId: null,
     pincode: "",
+    country: "",
+    type: 1,
   },
   isCompleted: {
     0: false,
@@ -74,11 +49,11 @@ export const defaultState = {
     2: false,
   },
   errors: {
-    userName: false,
-    email: false,
+    name: false,
+    mailId: false,
   },
-  permanentAddressCheck: false,
-  permanentAddress: {},
+  userHistory: [],
+  emailCheck: false,
   toggleIcon: {
     userNameSort: false,
     mailSort: false,
@@ -88,4 +63,5 @@ export const defaultState = {
     stateSort: false,
     professionSort: false,
   },
+  isEdit: false,
 };

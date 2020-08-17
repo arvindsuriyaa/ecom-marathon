@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   FormControl,
@@ -11,17 +11,34 @@ import { bindDispatch } from "../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import { communicationStyle } from "../../styles/FormStyles";
-import { state, district } from "../../utils/productSeed";
 import _ from "lodash";
+import instance from "../../utils/api/apiAction";
 import SelectField from "../common/SelectField";
 
 const AddressDetails = (props) => {
   const classes = communicationStyle();
-  const { reducer, actions } = props;
-  const { handleData, handleCheckbox } = actions;
-  const { addressDetails, permanentAddressCheck } = reducer;
+  const { reducer, actions, apiData } = props;
+  const { handleData, handleCheckbox, stepperCheck } = actions;
+  const { addressDetails } = reducer;
+  const { address, stateId, districtId, pincode, country } = addressDetails;
+  const [district, setDistrict] = useState([]);
+  let userInfo = { address, stateId, districtId, pincode, country };
   let index = 1;
   let detail = "addressDetails";
+
+  useEffect(() => {
+    assignDistrict(addressDetails.stateId);
+    stepperCheck("addressDetails", index, userInfo);
+  }, []);
+
+  const assignDistrict = async (id) => {
+    if (id) {
+      let districtCollection = await instance.get(`/districts/${id}`);
+      setDistrict(districtCollection.data);
+    } else {
+      setDistrict([]);
+    }
+  };
 
   return (
     <div className={classes.addressRoot}>
@@ -30,10 +47,12 @@ const AddressDetails = (props) => {
         <Grid item xs={12} sm={12}>
           <InputField
             type="text"
-            label="Institution Address"
-            name="institutionAddress"
-            value={addressDetails.institutionAddress}
-            onChange={(event) => handleData(event, index, detail)}
+            label="Address"
+            name="address"
+            value={addressDetails.address}
+            onChange={(event) =>
+              handleData(event, index, detail, addressDetails, userInfo)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -42,21 +61,28 @@ const AddressDetails = (props) => {
             label="Country"
             name="country"
             value={addressDetails.country}
-            onChange={(event) => handleData(event, index, detail)}
+            onChange={(event) =>
+              handleData(event, index, detail, addressDetails, userInfo)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl
             variant="filled"
             className={classes.formControl}
-            fullWidth="true"
+            fullWidth={true}
           >
             <InputLabel>State</InputLabel>
             <SelectField
-              name="state"
-              value={addressDetails.state}
-              onChange={(event) => handleData(event, index, detail)}
-              data={state}
+              name="stateId"
+              value={addressDetails.stateId}
+              onChange={async (event) => {
+                handleData(event, index, detail, addressDetails, userInfo);
+                addressDetails["districtId"] = null;
+                actions.assignData("addressDetails", addressDetails);
+                await assignDistrict(addressDetails.stateId);
+              }}
+              data={apiData.state}
             />
           </FormControl>
         </Grid>
@@ -64,26 +90,31 @@ const AddressDetails = (props) => {
           <FormControl
             variant="filled"
             className={classes.formControl}
-            fullWidth="true"
+            fullWidth={true}
           >
             <InputLabel id="demo-simple-select-filled-label">
               District
             </InputLabel>
             <SelectField
-              name="district"
-              value={addressDetails.district}
-              onChange={(event) => handleData(event, index, detail)}
+              name="districtId"
+              value={addressDetails.districtId}
+              onChange={(event) => {
+                handleData(event, index, detail, addressDetails, userInfo);
+              }}
               data={district}
+              disabled={addressDetails.stateId === null}
             />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
           <InputField
-            type="text"
+            type="number"
             label="Pincode"
             name="pincode"
             value={addressDetails.pincode}
-            onChange={(event) => handleData(event, index, detail)}
+            onChange={(event) =>
+              handleData(event, index, detail, addressDetails, userInfo)
+            }
           />
         </Grid>
       </Grid>
@@ -91,7 +122,7 @@ const AddressDetails = (props) => {
         <FormControlLabel
           control={
             <Checkbox
-              checked={permanentAddressCheck}
+              checked={addressDetails.type === 2}
               name="permanentAddressCheck"
               onChange={(event) => handleCheckbox(event, index, detail)}
               color="primary"

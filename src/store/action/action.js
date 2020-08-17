@@ -12,62 +12,61 @@ export const editData = (name, value) => ({
   payload: { name: name, value: value },
 });
 
-export const handleData = (event, index, detail) => {
+export const handleData = (event, index, detail, userInfo) => {
   return async (dispatch, getState) => {
-    const {
-      personalDetails,
-      addressDetails,
-      studentDetails,
-      professionalDetails,
-    } = getState().reducer;
-
+    const { addressDetails, qualificationDetails } = getState().reducer;
     let name = event.target.name;
-    let value = event.target.value;
-    if (value.replace(/\s/g, "").length <= 0) {
+    let value;
+    if (
+      name === "genderId" ||
+      name === "motherTongueId" ||
+      name === "preferredLanguageId" ||
+      name === "knownViaProducts"
+    ) {
+      value = Number(event.target.value);
+    } else {
+      value = event.target.value;
+    }
+    if (typeof value === "string" && value.replace(/\s/g, "").length <= 0) {
       value = "";
     }
     if (detail === "personalDetails") {
-      personalDetails[name] = value;
-      dispatch(assignData("personalDetails", personalDetails));
-      await dispatch(stepperCheck(name, index, personalDetails));
+      userInfo[name] = value;
+      dispatch(assignData("personalDetails", userInfo));
+      await dispatch(stepperCheck(name, index, userInfo));
     } else if (detail === "addressDetails") {
       addressDetails[name] = value;
+      userInfo[name] = value;
       dispatch(assignData("addressDetails", addressDetails));
-      await dispatch(stepperCheck(name, index, addressDetails));
-    } else {
-      if (detail === "student") {
-        studentDetails[name] = value;
-        dispatch(assignData("studentDetails", studentDetails));
-        await dispatch(stepperCheck(name, index, studentDetails));
-      } else if (detail === "professional") {
-        let data = await professionalDetails;
-        data[name] = value;
-        dispatch(assignData("professionalDetails", data));
-        await dispatch(stepperCheck(name, index, data));
-      }
+      await dispatch(stepperCheck(name, index, userInfo));
+    } else if (detail === "qualificationDetails") {
+      qualificationDetails[name] = value;
+      userInfo[name] = value;
+      dispatch(assignData("qualificationDetails", qualificationDetails));
+      await dispatch(stepperCheck(name, index, userInfo));
     }
   };
 };
 
-export const errorValidation = () => {
+export const errorValidation = (userList) => {
   return (dispatch, getState) => {
-    const { userHistory, personalDetails, errors, isEdit } = getState().reducer;
+    const { personalDetails, errors, isEdit } = getState().reducer;
     let duplicationCheck = false;
-    if (!personalDetails.userName) {
-      errors.userName = true;
+    if (!personalDetails.name) {
+      errors.name = true;
     }
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (!reg.test(personalDetails.email)) {
-      errors.email = true;
+    if (!reg.test(personalDetails.mailId)) {
+      errors.mailId = true;
     }
-    userHistory.map((item) => {
-      if (item.personalDetails.email === personalDetails.email && !isEdit) {
+    userList.map((item) => {
+      if (item.mailId === personalDetails.mailId && !isEdit) {
         duplicationCheck = true;
       }
     });
     (async () => {
       if (duplicationCheck) {
-        errors.email = true;
+        errors.mailId = true;
         await dispatch(assignData("emailCheck", true));
         return;
       } else {
@@ -79,42 +78,39 @@ export const errorValidation = () => {
   };
 };
 
-export const handleCheckbox = (event, index, detail) => {
+export const handleCheckbox = (event, index, detail, value) => {
   return async (dispatch, getState) => {
     const { personalDetails, addressDetails } = getState().reducer;
-    const { knowProduct } = personalDetails;
-    let name = event.target.name;
-    let value = event.target.checked;
+    const { knownViaProducts } = personalDetails;
     if (detail === "personalDetails") {
-      knowProduct[name] = value;
-      if (name === "isOthers") {
-        personalDetails["other"] = "";
+      if (value === 6) {
+        personalDetails["others"] = "";
       }
-      personalDetails["knowProduct"] = { ...knowProduct };
+      if (knownViaProducts.includes(value)) {
+        let filterProducts = knownViaProducts.filter((item) => item !== value);
+        personalDetails["knownViaProducts"] = filterProducts;
+      } else {
+        personalDetails["knownViaProducts"].push(value);
+      }
       dispatch(assignData("personalDetails", personalDetails));
-      await dispatch(stepperCheck(name, index, personalDetails));
+      await dispatch(stepperCheck("checkbox", index, personalDetails));
     } else if (detail === "addressDetails") {
-      let addressCopy;
-      if (name === "permanentAddressCheck") {
-        if (value) {
-          addressCopy = _.cloneDeep(addressDetails);
-        } else {
-          addressCopy = {};
-        }
+      let isChecked = event.target.checked;
+      if (isChecked) {
+        addressDetails.type = 2;
+      } else {
+        addressDetails.type = 1;
       }
-      dispatch(assignData("permanentAddressCheck", value));
-      dispatch(assignData("permanentAddress", addressCopy));
-      await dispatch(stepperCheck(name, index, addressDetails));
+      dispatch(assignData("addressDetails", addressDetails));
     }
   };
 };
 
 export const checkEmptyField = (data, formDetails, validationCount) => {
-  return async () => {
+  return () => {
     let stepperCheck = 0,
       sample,
       flag = true;
-
     function dataCheck(data) {
       stepperCheck = 0;
       data.map((item) => {
@@ -138,13 +134,22 @@ export const checkEmptyField = (data, formDetails, validationCount) => {
           } else if (detail[1] === null) {
             stepperCheck += 1;
             return;
+          } else if (typeof detail[1] === "number") {
+            return;
           } else if (Array.isArray(item[1])) {
             if (!item[1].length) {
               stepperCheck += 1;
+              flag = false;
               return;
+            } else {
+              if (item[1].includes(6)) {
+                flag = true;
+              } else {
+                flag = false;
+              }
             }
           } else if (!Array.isArray(item[1])) {
-            if (item[0] === "dob") {
+            if (item[0] === "dateOfBirth") {
               if (!item[1]) {
                 return (stepperCheck += 1);
               }
@@ -169,9 +174,8 @@ export const checkEmptyField = (data, formDetails, validationCount) => {
 };
 
 export const setDetail = (activeStep, formDetails, completed) => {
-  return async (dispatch, getState) => {
+  return (dispatch, getState) => {
     let reducer = getState().reducer;
-    let newCompleted = { ...completed };
     if (activeStep === 0) {
       const { personalDetails } = reducer;
       formDetails = { ...personalDetails };
@@ -179,15 +183,33 @@ export const setDetail = (activeStep, formDetails, completed) => {
       const { addressDetails } = reducer;
       formDetails = addressDetails;
     } else if (activeStep === 2) {
-      const { professionToggle } = reducer;
-      if (professionToggle.isStudent) {
-        const { studentDetails } = reducer;
-        formDetails = studentDetails;
-      } else if (professionToggle.isProfessional) {
-        const { professionalDetails } = reducer;
-        formDetails = professionalDetails;
-      } else if (professionToggle.isHouseWive) {
-        newCompleted[activeStep] = true;
+      const { qualificationDetails } = reducer;
+      if (qualificationDetails.userRoleId === 1) {
+        const {
+          userQualificationId,
+          studyingAt,
+          stateId,
+          pincode,
+          institutionName,
+          institutionAddress,
+          districtId,
+          country,
+        } = qualificationDetails;
+        formDetails = {
+          userQualificationId,
+          studyingAt,
+          stateId,
+          pincode,
+          institutionName,
+          institutionAddress,
+          districtId,
+          country,
+        };
+      } else if (qualificationDetails.userRoleId === 2) {
+        const { annumSal, levelId } = qualificationDetails;
+        formDetails = { annumSal, levelId };
+      } else if (qualificationDetails.userRoleId === 3) {
+        formDetails = {};
       }
     }
     return formDetails;
@@ -203,7 +225,7 @@ export const stepperCheck = (name, index, detail) => {
     let emptyFieldCount = await dispatch(
       checkEmptyField(data, detail, validationCount)
     );
-    if (name === "userName" || name === "email") {
+    if (name === "name" || name === "mailId") {
       errors[name] = false;
       dispatch(assignData("errors", errors));
     }

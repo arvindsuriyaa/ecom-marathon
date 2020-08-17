@@ -2,11 +2,11 @@ import React from "react";
 import { Container, Button } from "@material-ui/core";
 
 const Footer = (props) => {
+  console.log("footer props=======>", props);
   return (
     <Container className="form">
       <Button
         variant="contained"
-        color="grey"
         onClick={
           !props.activeStep
             ? () => props.cancel()
@@ -27,7 +27,9 @@ const Footer = (props) => {
         }
       >
         {props.activeStep === props.routePath.length - 1
-          ? "Save"
+          ? !props.isEdit
+            ? "Save"
+            : "Update"
           : props.activeStep < props.routePath.length - 1
           ? "Next"
           : "Save"}

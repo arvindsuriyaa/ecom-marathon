@@ -84,9 +84,9 @@ const StepperBox = (props) => {
               completed={props.completed[index]}
               onClick={() => props.handleStep(index)}
               disabled={
-                (props.errors.userName && props.errors.email) ||
-                props.errors.userName ||
-                props.errors.email
+                (props.errors.name && props.errors.mailId) ||
+                props.errors.name ||
+                props.errors.mailId
               }
             >
               <StepLabel>{label}</StepLabel>

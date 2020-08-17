@@ -11,7 +11,7 @@ const DateField = (props) => {
         inputVariant="filled"
         label="Date of Birth"
         value={props.value}
-        fullWidth="true"
+        fullWidth={true}
         name="dob"
         onChange={props.onChange}
         format="dd/MM/yyyy"
