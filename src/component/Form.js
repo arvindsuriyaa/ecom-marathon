@@ -17,6 +17,7 @@ import DialogBox from "../component/common/DialogBox";
 import { updateUser } from "../utils/api/putApi";
 import * as apiData from "../utils/api/getAPI";
 import * as post from "../utils/api/postApi";
+import * as Root from "../utils/RootDirectory";
 import { withRouter } from "react-router-dom";
 
 const Form = (props) => {
@@ -43,7 +44,7 @@ const Form = (props) => {
     let steps = [0, 1, 2];
     let newCompleted = { ...isCompleted };
     steps.map((step) => {
-      async function asd(step) {
+      async function checkStep(step) {
         let formData = setDetail(step, formDetails, completed);
         let data = Object.entries(formData);
         let emptyFieldCount = checkEmptyField(data, formData, validationCount);
@@ -58,7 +59,7 @@ const Form = (props) => {
         }
         await actions.assignData("isCompleted", newCompleted);
       }
-      asd(step);
+      checkStep(step);
     });
     fetchApi();
     history.push("/Form/PersonalDetails");
@@ -124,7 +125,7 @@ const Form = (props) => {
         let res = await post.postAPI(details);
       }
       actions.editData("reducer", state);
-      history.push("/Table");
+      history.push(Root.TABLE);
     } else {
       handleStep(activeStep - 2);
       history.push(routePath[0]);
@@ -181,11 +182,11 @@ const Form = (props) => {
     const { history, location } = props;
     const { action } = history;
     if (action === "POP") {
-      if (location.pathname === "/Form/PersonalDetails") {
+      if (location.pathname === Root.PERSONAL_DETAILS) {
         handleStep(0);
-      } else if (location.pathname === "/Form/AddressDetails") {
+      } else if (location.pathname === Root.ADDRESS_DETAILS) {
         handleStep(1);
-      } else if (location.pathname === "/Form/ProfessionalDetails") {
+      } else if (location.pathname === Root.PROFESSIONAL_DETAILS) {
         handleStep(2);
       }
     }
@@ -202,7 +203,7 @@ const Form = (props) => {
             onClick={
               !activeStep
                 ? () => {
-                    history.push("/Table");
+                    history.push(Root.TABLE);
                     cancel();
                   }
                 : () => handleBack(activeStep)
