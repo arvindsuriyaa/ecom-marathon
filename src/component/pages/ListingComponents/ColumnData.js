@@ -1,5 +1,5 @@
 import React from "react";
-import * as styles from "../../styles/TableElements.module.scss";
+import * as styles from "../../../styles/TableElements.module.scss";
 import ToggleButton from "./ToggleButton";
 import TableActions from "./TableActions";
 

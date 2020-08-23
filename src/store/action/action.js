@@ -1,15 +1,15 @@
-import EMPLOYEE_DETAILS from "../Types/types";
-import { EDIT_DETAILS } from "../Types/types";
-import _ from "lodash";
+/* eslint-disable array-callback-return */
+/* eslint-disable no-useless-escape */
+import ASSIGN_DATA from "../types/types";
+import { RESET_DATA } from "../types/types";
 
 export const assignData = (name, value) => ({
-  type: EMPLOYEE_DETAILS,
+  type: ASSIGN_DATA,
   payload: { name: name, value: value },
 });
 
-export const editData = (name, value) => ({
-  type: EDIT_DETAILS,
-  payload: { name: name, value: value },
+export const resetForm = (value) => ({
+  type: RESET_DATA,
 });
 
 export const handleData = (event, index, detail, userInfo) => {
@@ -17,12 +17,7 @@ export const handleData = (event, index, detail, userInfo) => {
     const { addressDetails, qualificationDetails } = getState().reducer;
     let name = event.target.name;
     let value;
-    if (
-      name === "genderId" ||
-      name === "motherTongueId" ||
-      name === "preferredLanguageId" ||
-      name === "knownViaProducts"
-    ) {
+    if (parseInt(event.target.value)) {
       value = Number(event.target.value);
     } else {
       value = event.target.value;
@@ -48,33 +43,34 @@ export const handleData = (event, index, detail, userInfo) => {
   };
 };
 
-export const errorValidation = (userList) => {
-  return (dispatch, getState) => {
+export const checkDuplication = (userList) => {
+  return async (dispatch, getState) => {
     const { personalDetails, errors, isEdit } = getState().reducer;
     let duplicationCheck = false;
+    duplicationCheck = userList.some(
+      (item) => item.mailId === personalDetails.mailId && !isEdit
+    );
+
+    if (duplicationCheck) {
+      errors.mailId = true;
+      await dispatch(assignData("emailCheck", true));
+    } else {
+      await dispatch(assignData("emailCheck", false));
+    }
+    await dispatch(assignData("errors", { ...errors }));
+  };
+};
+
+export const checkMandatoryField = () => {
+  return (dispatch, getState) => {
+    const { personalDetails, errors } = getState().reducer;
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!personalDetails.name) {
       errors.name = true;
     }
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!reg.test(personalDetails.mailId)) {
       errors.mailId = true;
     }
-    userList.map((item) => {
-      if (item.mailId === personalDetails.mailId && !isEdit) {
-        duplicationCheck = true;
-      }
-    });
-    (async () => {
-      if (duplicationCheck) {
-        errors.mailId = true;
-        await dispatch(assignData("emailCheck", true));
-        return;
-      } else {
-        await dispatch(assignData("emailCheck", false));
-      }
-      await dispatch(assignData("errors", { ...errors }));
-    })();
-    return duplicationCheck;
   };
 };
 
@@ -106,70 +102,40 @@ export const handleCheckbox = (event, index, detail, value) => {
   };
 };
 
-export const checkEmptyField = (data, formDetails, validationCount) => {
+export const keyCheck = (data, stepperCheck, flag) => {
+  data.map((detail) => {
+    if (Array.isArray(detail[1])) {
+      if (!detail[1].length) {
+        stepperCheck += 1;
+      } else if (detail[0] === "knownViaProducts" && detail[1].includes(6)) {
+        flag = false;
+      }
+    } else if (detail[0] === "others") {
+      if (!flag && !detail[1]) {
+        stepperCheck += 1;
+      }
+      return stepperCheck;
+    } else if (
+      (detail[1] === null ||
+        (typeof detail[1] === "string" && !detail[1].length)) &&
+      flag
+    ) {
+      stepperCheck += 1;
+    }
+  });
+  return stepperCheck;
+};
+
+export const checkField = (data) => {
   return () => {
     let stepperCheck = 0,
-      sample,
       flag = true;
     function dataCheck(data) {
       stepperCheck = 0;
-      data.map((item) => {
-        function keyCheck(detail) {
-          if (typeof detail[1] === "string") {
-            if (!detail[1].length && flag) {
-              stepperCheck += 1;
-              return;
-            }
-          } else if (typeof detail[1] === "boolean") {
-            if (!detail[1]) {
-              stepperCheck += 1;
-            }
-            if (detail[0] === "isOthers") {
-              flag = false;
-              if (detail[1] && !formDetails["other"].length) {
-                sample += 1;
-              }
-            }
-            return;
-          } else if (detail[1] === null) {
-            stepperCheck += 1;
-            return;
-          } else if (typeof detail[1] === "number") {
-            return;
-          } else if (Array.isArray(item[1])) {
-            if (!item[1].length) {
-              stepperCheck += 1;
-              flag = false;
-              return;
-            } else {
-              if (item[1].includes(6)) {
-                flag = true;
-              } else {
-                flag = false;
-              }
-            }
-          } else if (!Array.isArray(item[1])) {
-            if (item[0] === "dateOfBirth") {
-              if (!item[1]) {
-                return (stepperCheck += 1);
-              }
-              return;
-            }
-            sample = stepperCheck;
-            dataCheck(Object.entries(item[1]));
-            if (stepperCheck === Object.keys(item[1]).length) {
-              stepperCheck = sample + 1;
-            } else {
-              stepperCheck = sample;
-            }
-          }
-        }
-        keyCheck(item);
-      });
+      return (stepperCheck = keyCheck(data, stepperCheck, flag));
     }
     dataCheck(data);
-    validationCount = stepperCheck;
-    return validationCount;
+    return stepperCheck;
   };
 };
 
@@ -185,26 +151,8 @@ export const setDetail = (activeStep, formDetails, completed) => {
     } else if (activeStep === 2) {
       const { qualificationDetails } = reducer;
       if (qualificationDetails.userRoleId === 1) {
-        const {
-          userQualificationId,
-          studyingAt,
-          stateId,
-          pincode,
-          institutionName,
-          institutionAddress,
-          districtId,
-          country,
-        } = qualificationDetails;
-        formDetails = {
-          userQualificationId,
-          studyingAt,
-          stateId,
-          pincode,
-          institutionName,
-          institutionAddress,
-          districtId,
-          country,
-        };
+        const { annumSal, levelId, ...formDetails } = qualificationDetails;
+        return formDetails;
       } else if (qualificationDetails.userRoleId === 2) {
         const { annumSal, levelId } = qualificationDetails;
         formDetails = { annumSal, levelId };
@@ -219,12 +167,9 @@ export const setDetail = (activeStep, formDetails, completed) => {
 export const stepperCheck = (name, index, detail) => {
   return async (dispatch, getState) => {
     const { isCompleted, errors } = getState().reducer;
-    let validationCount = 0;
     let newCompleted = { ...isCompleted };
     let data = Object.entries(detail);
-    let emptyFieldCount = await dispatch(
-      checkEmptyField(data, detail, validationCount)
-    );
+    let emptyFieldCount = await dispatch(checkField(data));
     if (name === "name" || name === "mailId") {
       errors[name] = false;
       dispatch(assignData("errors", errors));

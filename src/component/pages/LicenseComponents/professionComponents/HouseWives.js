@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
-import { HouseWifeForm } from "../../../styles/FormStyles";
-import { bindDispatch } from "../../../utils";
+import { HouseWifeForm } from "../../../../styles/FormStyles";
+import { bindDispatch } from "../../../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 

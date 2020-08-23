@@ -1,12 +1,13 @@
-import EMPLOYEE_DETAILS from "../Types/types";
-import { EDIT_DETAILS } from "../Types/types";
+import ASSIGN_DATA from "../types/types";
+import { RESET_DATA } from "../types/types";
+import _ from "lodash";
 
-const initialState = {
+export const initialState = {
   personalDetails: {
     name: "",
     genderId: null,
     dateOfBirth: null,
-    age: "",
+    age: null,
     mailId: "",
     mobNo: "",
     motherTongueId: null,
@@ -57,13 +58,15 @@ const initialState = {
   isEdit: false,
 };
 
-export const reducer = (state = initialState, action) => {
+export const reducer = (state = _.cloneDeep(initialState), action) => {
   switch (action.type) {
-    case EMPLOYEE_DETAILS:
+    case ASSIGN_DATA:
       return { ...state, [action.payload.name]: action.payload.value };
-    case EDIT_DETAILS:
-      return { ...state, ...action.payload.value };
+    case RESET_DATA:
+      return { ...state, ...initialState };
     default:
       return state;
   }
 };
+
+

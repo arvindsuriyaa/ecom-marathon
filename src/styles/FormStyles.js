@@ -76,6 +76,13 @@ export const personalStyle = makeStyles((theme) => ({
       color: "#000000ad",
     },
   },
+  progress: {
+    height: "50vh",
+    width: "80%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   checked: {},
   userRoot: {
     background: "rgb(241,241,241)",
@@ -116,6 +123,13 @@ export const communicationStyle = makeStyles({
     height: "auto",
     width: "80%",
   },
+  progress: {
+    height: "50vh",
+    width: "80%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   grid: {
     padding: "0px 50px",
   },
@@ -134,6 +148,13 @@ export const professionStyle = makeStyles({
     // background:'rgb(241,241,241)',
     height: "95%",
     width: "80%",
+  },
+  progress: {
+    height: "50vh",
+    width: "80%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   radioRoute: {
     background: "rgb(241,241,241)",

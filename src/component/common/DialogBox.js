@@ -3,12 +3,16 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import { withRouter } from "react-router-dom";
 
-export default function AlertDialog() {
+
+const AlertDialog = (props) => {
+  const { history } = props;
   const [open, setOpen] = React.useState(true);
 
   const handleClose = () => {
     setOpen(false);
+    if (props.location.pathname !== "/Table") history.push("/Table");
   };
 
   return (
@@ -30,4 +34,5 @@ export default function AlertDialog() {
       </Dialog>
     </div>
   );
-}
+};
+export default withRouter(AlertDialog);

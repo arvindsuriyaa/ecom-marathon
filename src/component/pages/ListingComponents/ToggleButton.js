@@ -1,5 +1,5 @@
 import React from "react";
-import * as styles from "../../styles/TableElements.module.scss";
+import * as styles from "../../../styles/TableElements.module.scss";
 import SortIcon from "@material-ui/icons/Sort";
 
 const ToggleButton = (props) => {

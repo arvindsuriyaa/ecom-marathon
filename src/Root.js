@@ -1,66 +1,53 @@
 import React from "react";
-import Table from "./component/Table";
-import PersonalDetails from "./component/FormComponents/PersonalDetails";
-import AddressDetails from "./component/FormComponents/AddressDetails";
-import ProfessionalDetails from "./component/FormComponents/ProfessionalDetails";
-import * as directory from "./utils/RootDirectory";
+import LicenseList from "./component/pages/LicenseList";
+import PersonalDetails from "./component/pages/LicenseComponents/PersonalDetails";
+import AddressDetails from "./component/pages/LicenseComponents/AddressDetails";
+import ProfessionalDetails from "./component/pages/LicenseComponents/ProfessionalDetails";
+import * as routePath from "./constants/path";
 import {
   BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
 } from "react-router-dom";
-import Form from "./component/Form";
+import License from "./component/pages/License";
+import NavBar from "./component/common/NavBar";
 const Root = () => {
   return (
-    <Router>
-      <Switch>
-        <Route path={directory.FORM}>
-          <Form>
-            {(props) => (
+    <>
+      <NavBar />
+      <Router>
+        <Switch>
+          <Route path={routePath.FORM}>
+            <License>
               <Switch>
                 <Route
-                  path={directory.PERSONAL_DETAILS}
-                  render={(prop) => {
-                    const newProps = {
-                      ...prop,
-                      apiData: { ...props.seed.personalDetailsAPI },
-                    };
-                    return <PersonalDetails {...newProps} />;
-                  }}
+                  path={routePath.PERSONAL_DETAILS}
+                  component={PersonalDetails}
                 />
                 <Route
-                  path={directory.ADDRESS_DETAILS}
-                  render={(prop) => {
-                    const newProps = {
-                      ...prop,
-                      apiData: { ...props.seed.addressDetailsAPI },
-                    };
-                    return <AddressDetails {...newProps} />;
-                  }}
+                  path={routePath.ADDRESS_DETAILS}
+                  component={AddressDetails}
                 />
                 <Route
-                  path={directory.PROFESSIONAL_DETAILS}
-                  render={(prop) => {
-                    const newProps = {
-                      ...prop,
-                      apiData: { ...props.seed.qualificationAPI },
-                    };
-                    return <ProfessionalDetails {...newProps} />;
-                  }}
+                  path={routePath.PROFESSIONAL_DETAILS}
+                  component={ProfessionalDetails}
                 />
                 <Redirect
-                  from={directory.FORM}
-                  to={directory.PERSONAL_DETAILS}
+                  from={routePath.FORM}
+                  to={routePath.PERSONAL_DETAILS}
                 />
               </Switch>
-            )}
-          </Form>
-        </Route>
-        <Route path={directory.TABLE} render={(prop) => <Table {...prop} />} />
-        <Redirect exact from="/" to={directory.TABLE} />
-      </Switch>
-    </Router>
+            </License>
+          </Route>
+          <Route
+            path={routePath.TABLE}
+            render={(prop) => <LicenseList {...prop} />}
+          />
+          <Redirect exact from="/" to={routePath.TABLE} />
+        </Switch>
+      </Router>
+    </>
   );
 };
 

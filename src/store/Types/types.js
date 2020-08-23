@@ -1,5 +1,0 @@
-export const EMPOLYEE_DETAILS = "EMPOLYEE_DETAILS";
-
-export const EDIT_DETAILS = "EDIT_DETAILS";
-
-export default { EMPOLYEE_DETAILS, EDIT_DETAILS };

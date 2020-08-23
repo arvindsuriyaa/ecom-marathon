@@ -1,62 +1,62 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 import React, { useState, useEffect } from "react";
-import { RadioGroup, Radio, FormControlLabel } from "@material-ui/core";
+import { RadioGroup, CircularProgress } from "@material-ui/core";
 import Student from "./professionComponents/Student";
 import Professional from "./professionComponents/Professional";
 import HouseWives from "./professionComponents/HouseWives";
-import { bindDispatch } from "../../utils";
+import { bindDispatch } from "../../../utils";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
-import { professionStyle } from "../../styles/FormStyles";
-import ModalBox from "../common/ModalBox";
+import { professionStyle } from "../../../styles/FormStyles";
+import ModalBox from "../../common/ModalBox";
+import DialogBox from "../../common/DialogBox";
+import * as fetchApi from "../../../api/apiAction";
+import RadioButton from "../../common/RadioButton";
 
 const ProfessionalDetails = (props) => {
-  const { actions, reducer, apiData } = props;
+  const { actions, reducer } = props;
   const { qualificationDetails } = reducer;
   const { isEdit } = reducer;
-  const {
-    userRoleId,
-    userQualificationId,
-    institutionName,
-    institutionAddress,
-    country,
-    studyingAt,
-    stateId,
-    districtId,
-    pincode,
-    levelId,
-    annumSal,
-  } = qualificationDetails;
+  const { id, userId, ...professionalDetails } = qualificationDetails;
   const [component, setComponent] = useState();
   const [toggle, setToggle] = useState("");
   const [open, setOpen] = useState(false);
-  const professionalDetails = {
-    userRoleId,
-    userQualificationId,
-    institutionName,
-    institutionAddress,
-    country,
-    studyingAt,
-    stateId,
-    districtId,
-    pincode,
-    levelId,
-    annumSal,
-  };
+  const [apiData, setApiData] = useState([]);
+  const [status, setStatus] = useState(<CircularProgress size={70} />);
 
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const newProps = { ...props, apiData };
     if (qualificationDetails.userRoleId === 1) {
-      setComponent(<Student {...props} />);
+      setComponent(<Student {...newProps} />);
     } else if (qualificationDetails.userRoleId === 2) {
-      setComponent(<Professional {...props} />);
+      setComponent(<Professional {...newProps} />);
     } else if (qualificationDetails.userRoleId === 3) {
-      setComponent(<HouseWives {...props} />);
+      setComponent(<HouseWives {...newProps} />);
     }
-  }, [props]);
+  }, [apiData]);
+
+  async function fetchData() {
+    const response = await fetchApi.qualificationAPI();
+    if (Array.isArray(response)) {
+      let Data = [];
+      response.map((item) => {
+        Data.push(item.data);
+      });
+      setApiData(Data);
+    } else {
+      setStatus(<DialogBox />);
+    }
+  }
 
   const assignToggle = async (value) => {
     setToggle(value);
   };
+
   const clearField = async (record) => {
     let data = Object.entries(record);
     data.map((item) => {
@@ -74,8 +74,10 @@ const ProfessionalDetails = (props) => {
     let value, data;
     value = Number(event.target.value);
     data = await clearField(professionalDetails);
-    data.id = qualificationDetails.id;
-    data.userId = qualificationDetails.userId;
+    if (isEdit) {
+      data.id = qualificationDetails.id;
+      data.userId = qualificationDetails.userId;
+    }
     if (value) {
       data["userRoleId"] = value;
     } else {
@@ -87,35 +89,33 @@ const ProfessionalDetails = (props) => {
       setOpen(true);
       return;
     }
+    const newProps = { ...props, apiData };
     await actions.assignData("qualificationDetails", { ...data });
     if (value === 1 || toggle === 1) {
-      setComponent(<Student {...props} />);
+      setComponent(<Student {...newProps} />);
     } else if (value === 2 || toggle === 2) {
-      setComponent(<Professional {...props} />);
+      setComponent(<Professional {...newProps} />);
     } else if (value === 3 || toggle === 3) {
-      setComponent(<HouseWives {...props} />);
+      setComponent(<HouseWives {...newProps} />);
     }
     setOpen(false);
   };
 
   const classes = professionStyle();
-  return (
+  return !apiData.length ? (
+    <div className={classes.progress}>{status}</div>
+  ) : (
     <div className={classes.root}>
       <div className={classes.radioRoute}>
         <RadioGroup row className={classes.alignRadio}>
-          {apiData.userRoles &&
-            apiData.userRoles.map((role) => {
+          {apiData[4] &&
+            apiData[4].map((role) => {
               return (
-                <FormControlLabel
-                  control={
-                    <Radio
-                      color="primary"
-                      value={role.id}
-                      checked={qualificationDetails.userRoleId === role.id}
-                      onChange={(event) => assignComponent(event)}
-                    />
-                  }
-                  label={role.name}
+                <RadioButton
+                  value={role.id}
+                  checked={qualificationDetails.userRoleId === role.id}
+                  onChange={(event) => assignComponent(event)}
+                  itemName={role.name}
                 />
               );
             })}

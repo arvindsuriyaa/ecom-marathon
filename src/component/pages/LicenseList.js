@@ -2,18 +2,17 @@
 import React, { Component } from "react";
 import { Button, CircularProgress } from "@material-ui/core";
 import "react-table-v6/react-table.css";
-import "../styles/Table.scss";
-import * as styles from "../styles/TableStyles.module.scss";
+import "../../styles/Table.scss";
+import * as styles from "../../styles/TableStyles.module.scss";
 import ReactTable from "react-table-v6";
-import ColumnData from "./TableComponents/ColumnData";
+import ColumnData from "./ListingComponents/ColumnData";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
-import bindDispatch from "../utils/bindDispatch";
-import * as apiReq from "../utils/api/getAPI";
-import DialogBox from "../component/common/DialogBox";
-import { deleteAPI } from "../utils/api/deleteApi";
+import bindDispatch from "../../utils/bindDispatch";
+import * as fetchApi from "../../api/apiAction";
+import DialogBox from "../common/DialogBox";
 import _ from "lodash";
-import { defaultState } from "../utils/productSeed";
+import { initialState } from "../../store/reducer/reducer";
 
 class Table extends Component {
   constructor(props) {
@@ -42,75 +41,58 @@ class Table extends Component {
     this.updateColumn();
   };
 
-  filteredData = async () => {
+  findWord = (word, searchInput) => {
+    return (
+      (word.toLowerCase().includes(searchInput.toLowerCase()) ||
+        word.toString().toLowerCase().includes(searchInput.toLowerCase())) &&
+      searchInput.length
+    );
+  };
+
+  highlightText = (word, index, searchInput) => {
+    let newText = [
+      word.substring(0, index),
+      <span className={styles.highlight}>
+        {word.substring(index, index + searchInput.length)}
+      </span>,
+      word.substring(index + searchInput.length),
+    ];
+    return newText;
+  };
+
+  filterList = (accumulator = [], val) => {
     let { searchInput } = this.state;
-    let res = await apiReq.getAllUsers();
-    let clonedArray = _.cloneDeep(res.data);
-    let filterData = [];
-    clonedArray.map((value) => {
-      if (!searchInput) {
-        return filterData.push(value);
+    if (!searchInput) {
+      accumulator.push(val);
+      return accumulator;
+    }
+    let isLetter = false;
+    for (const key in val) {
+      if (val[key].length || val[key] !== "" || val[key] !== null) {
+        let word = val[key].toString();
+        let isWord = this.findWord(word, searchInput);
+        if (isWord) {
+          let index =
+            word.toLowerCase().indexOf(searchInput.toLowerCase()) || 0;
+          val[key] = this.highlightText(word, index, searchInput);
+          isLetter = true;
+        }
       }
-      let record = Object.entries(value);
-      let isLetter = false;
-      function checkWord(record) {
-        record.map((details) => {
-          if (typeof details[1] === "object" && details[0] !== "dob") {
-            if (!Array.isArray(details[1])) {
-              let record = Object.entries(details[1]);
-              checkWord(record);
-              return (details[1] = Object.fromEntries(record));
-            }
-          }
-          if (
-            details[0] === "name" ||
-            details[0] === "mailId" ||
-            details[0] === "mob" ||
-            details[0] === "address" ||
-            details[0] === "district" ||
-            details[0] === "state" ||
-            details[0] === "userRole"
-          ) {
-            if (typeof details[1] !== "boolean") {
-              let val = details[1];
-              if (
-                (val.toLowerCase().includes(searchInput.toLowerCase()) ||
-                  val
-                    .toString()
-                    .toLowerCase()
-                    .includes(searchInput.toLowerCase()) ||
-                  val
-                    .toString()
-                    .toLowerCase()
-                    .includes(searchInput.toLowerCase())) &&
-                searchInput.length
-              ) {
-                let index = val
-                  .toLowerCase()
-                  .indexOf(searchInput.toLowerCase());
-                let newText = [
-                  val.substring(0, index),
-                  <span className={styles.highlight}>
-                    {val.substring(index, index + searchInput.length)}
-                  </span>,
-                  val.substring(index + searchInput.length),
-                ];
-                isLetter = true;
-                details[1] = newText;
-              }
-            }
-          }
-        });
-      }
-      checkWord(record);
-      if (isLetter) {
-        value = Object.fromEntries(record);
-        return filterData.push(value);
-      }
-    });
+    }
+    if (isLetter) {
+      accumulator.push(val);
+    }
+    return accumulator;
+  };
+
+  filteredData = async () => {
+    let response = await fetchApi.getAllUsers();
+    let clonedArray = _.cloneDeep(response.data);
+
+    let individualList = clonedArray.reduce(this.filterList, []);
     this.setState(
       {
-        userCollection: filterData,
+        userCollection: individualList,
       },
       () => {
         this.updateColumn();
@@ -124,28 +106,20 @@ class Table extends Component {
   };
 
   handleEdit = async (row) => {
-    const { actions, history, reducer } = this.props;
-    const { personalDetails } = reducer;
-    let res = await apiReq.getUsersById(row.original.id);
-    await actions.editData("reducer", defaultState);
-    let editInfo = res.data;
-    personalDetails.id = editInfo.id;
-    personalDetails.mailId = editInfo.mailId;
-    personalDetails.name = editInfo.name;
-    personalDetails.age = editInfo.age;
-    personalDetails.mobNo = editInfo.mobNo;
-    personalDetails.genderId = editInfo.genderId;
-    personalDetails.dateOfBirth = editInfo.dateOfBirth;
-    personalDetails.motherTongueId = editInfo.motherTongueId;
-    personalDetails.preferredLanguageId = editInfo.preferredLanguageId;
-    personalDetails.knownViaProducts = editInfo.knownViaProducts;
-    personalDetails.others = editInfo.others;
+    const { actions, history } = this.props;
+    let response = await fetchApi.getUsersById(row.original.id);
+    await actions.resetForm(initialState);
+    let editInfo = response.data;
+    const {
+      addressDetails,
+      qualificationDetails,
+      token,
+      isDeleted,
+      ...personalDetails
+    } = editInfo;
     await actions.assignData("personalDetails", personalDetails);
-    await actions.assignData(
-      "qualificationDetails",
-      editInfo.qualificationDetails
-    );
-    await actions.assignData("addressDetails", editInfo.addressDetails);
+    await actions.assignData("qualificationDetails", qualificationDetails);
+    await actions.assignData("addressDetails", addressDetails);
     actions.assignData("isEdit", true);
     history.push("/Form");
   };
@@ -153,7 +127,7 @@ class Table extends Component {
   handleDelete = async (row) => {
     const { userCollection } = this.state;
     let userInfo = [...userCollection];
-    await deleteAPI(row.original.id);
+    await fetchApi.deleteAPI(row.original.id);
     userInfo.splice(row.index, 1);
     this.setState({ userCollection: userInfo }, () => {
       this.updateColumn();
@@ -176,7 +150,7 @@ class Table extends Component {
   };
 
   async componentDidMount() {
-    let response = await apiReq.getAllUsers();
+    let response = await fetchApi.getAllUsers();
     if (response.request.status === 201) {
       this.setState(
         {
