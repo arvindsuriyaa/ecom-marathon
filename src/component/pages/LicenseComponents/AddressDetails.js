@@ -17,18 +17,16 @@ const AddressDetails = (props) => {
   const { reducer, actions } = props;
   const { handleData, handleCheckbox, stepperCheck } = actions;
   const { addressDetails } = reducer;
-  const { address, stateId, districtId, pincode, country } = addressDetails;
   const [district, setDistrict] = useState([]);
   const [apiData, setApiData] = useState([]);
   const [status, setStatus] = useState(<CircularProgress size={70} />);
-  let userInfo = { address, stateId, districtId, pincode, country };
   let index = 1;
   let detail = "addressDetails";
 
   useEffect(() => {
     fetchData();
     assignDistrict(addressDetails.stateId);
-    stepperCheck("addressDetails", index, userInfo);
+    stepperCheck("addressDetails", index, addressDetails);
   }, []);
 
   async function fetchData() {
@@ -65,7 +63,7 @@ const AddressDetails = (props) => {
           label="Address"
           name="address"
           value={addressDetails.address}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, addressDetails)}
         />
         <InputField
           sm={6}
@@ -73,7 +71,7 @@ const AddressDetails = (props) => {
           label="Country"
           name="country"
           value={addressDetails.country}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, addressDetails)}
         />
         <SelectField
           sm={6}
@@ -82,7 +80,7 @@ const AddressDetails = (props) => {
           name="stateId"
           value={addressDetails.stateId}
           onChange={async (event) => {
-            handleData(event, index, detail, userInfo);
+            handleData(event, index, detail, addressDetails);
             addressDetails["districtId"] = null;
             actions.assignData("addressDetails", addressDetails);
             await assignDistrict(addressDetails.stateId);
@@ -96,7 +94,7 @@ const AddressDetails = (props) => {
           name="districtId"
           value={addressDetails.districtId}
           onChange={(event) => {
-            handleData(event, index, detail, userInfo);
+            handleData(event, index, detail, addressDetails);
           }}
           data={district}
           disabled={addressDetails.stateId === null}
@@ -107,7 +105,7 @@ const AddressDetails = (props) => {
           label="Pincode"
           name="pincode"
           value={addressDetails.pincode}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, addressDetails)}
         />
       </Grid>
       <div className={classes.content}>

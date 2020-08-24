@@ -63,10 +63,8 @@ export const reducer = (state = _.cloneDeep(initialState), action) => {
     case ASSIGN_DATA:
       return { ...state, [action.payload.name]: action.payload.value };
     case RESET_DATA:
-      return { ...state, ...initialState };
+      return { ...state, ..._.cloneDeep(initialState) };
     default:
       return state;
   }
 };
-
-
