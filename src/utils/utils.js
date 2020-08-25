@@ -1,6 +1,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-useless-escape */
 import { assignData } from "../store/action/action";
+import _ from "lodash";
 
 export const handleData = (event, index, detail, userInfo) => {
   return async (dispatch, getState) => {
@@ -20,19 +21,26 @@ export const handleData = (event, index, detail, userInfo) => {
 
 export const assignDetails = (detail, userInfo, index, name, value) => {
   return async (dispatch, getState) => {
-    const { qualificationDetails } = getState().reducer;
+    const { qualificationDetails, errors } = _.cloneDeep(getState().reducer);
     if (detail === "personalDetails") {
       userInfo[name] = value;
-      await dispatch(assignData("personalDetails", userInfo));
+      if (name === "name" || name === "mailId") {
+        errors[name] = false;
+        dispatch(assignData("errors", errors));
+      }
+      await dispatch(assignData("personalDetails", { ...userInfo }));
     } else if (detail === "addressDetails") {
       userInfo[name] = value;
-      await dispatch(assignData("addressDetails", userInfo));
+      await dispatch(assignData("addressDetails", { ...userInfo }));
     } else if (detail === "qualificationDetails") {
       userInfo[name] = value;
-      qualificationDetails[name] = value;
-      await dispatch(assignData("qualificationDetails", qualificationDetails));
+      dispatch(
+        assignData("qualificationDetails", {
+          ...qualificationDetails,
+          ...userInfo,
+        })
+      );
     }
-    await dispatch(stepperCheck(name, index, userInfo));
   };
 };
 
@@ -81,8 +89,7 @@ export const handleCheckbox = (event, index, detail, value) => {
       } else {
         personalDetails["knownViaProducts"].push(value);
       }
-      dispatch(assignData("personalDetails", personalDetails));
-      await dispatch(stepperCheck("checkbox", index, personalDetails));
+      dispatch(assignData("personalDetails", { ...personalDetails }));
     } else if (detail === "addressDetails") {
       let isChecked = event.target.checked;
       if (isChecked) {
@@ -90,45 +97,45 @@ export const handleCheckbox = (event, index, detail, value) => {
       } else {
         addressDetails.type = 1;
       }
-      dispatch(assignData("addressDetails", addressDetails));
+      dispatch(assignData("addressDetails", { ...addressDetails }));
     }
   };
 };
 
-export const keyCheck = (data, stepperCheck, flag) => {
+export const keyCheck = (data, vacantFieldCount, flag) => {
   data.map((detail) => {
     if (Array.isArray(detail[1])) {
       if (!detail[1].length) {
-        stepperCheck += 1;
+        vacantFieldCount += 1;
       } else if (detail[0] === "knownViaProducts" && detail[1].includes(6)) {
         flag = false;
       }
     } else if (detail[0] === "others") {
       if (!flag && !detail[1]) {
-        stepperCheck += 1;
+        vacantFieldCount += 1;
       }
-      return stepperCheck;
+      return vacantFieldCount;
     } else if (
       (detail[1] === null ||
         (typeof detail[1] === "string" && !detail[1].length)) &&
       flag
     ) {
-      stepperCheck += 1;
+      vacantFieldCount += 1;
     }
   });
-  return stepperCheck;
+  return vacantFieldCount;
 };
 
 export const checkField = (data) => {
   return () => {
-    let stepperCheck = 0,
+    let vacantFieldCount = 0,
       flag = true;
     function dataCheck(data) {
-      stepperCheck = 0;
-      return (stepperCheck = keyCheck(data, stepperCheck, flag));
+      vacantFieldCount = 0;
+      return (vacantFieldCount = keyCheck(data, vacantFieldCount, flag));
     }
     dataCheck(data);
-    return stepperCheck;
+    return vacantFieldCount;
   };
 };
 
@@ -157,16 +164,12 @@ export const setDetail = (activeStep, formDetails, completed) => {
   };
 };
 
-export const stepperCheck = (name, index, detail) => {
+export const stepperCheck = (index, detail) => {
   return async (dispatch, getState) => {
-    const { isCompleted, errors } = getState().reducer;
+    const { isCompleted } = getState().reducer;
     let newCompleted = { ...isCompleted };
     let data = Object.entries(detail);
     let emptyFieldCount = await dispatch(checkField(data));
-    if (name === "name" || name === "mailId") {
-      errors[name] = false;
-      dispatch(assignData("errors", errors));
-    }
     if (emptyFieldCount <= Object.keys(detail).length && emptyFieldCount > 0) {
       newCompleted[index] = false;
     }

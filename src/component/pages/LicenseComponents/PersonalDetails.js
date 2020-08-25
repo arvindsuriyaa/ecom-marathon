@@ -34,8 +34,12 @@ const PersonalDetails = (props) => {
 
   useEffect(() => {
     fetchData();
-    stepperCheck("personalDetails", index, personalDetails);
+    stepperCheck(index, personalDetails);
   }, []);
+
+  useEffect(() => {
+    stepperCheck(index, personalDetails);
+  }, [reducer.personalDetails]);
 
   async function fetchData() {
     const response = await fetchApi.personalAddressAPI();
@@ -70,7 +74,7 @@ const PersonalDetails = (props) => {
       });
     });
     personalDetails["preferredLanguageId"] = lang;
-    stepperCheck("preferredLanguageId", index, personalDetails);
+    stepperCheck(index, personalDetails);
     actions.assignData("personalDetails", personalDetails);
   };
 
@@ -84,7 +88,7 @@ const PersonalDetails = (props) => {
         personalDetails["dateOfBirth"] = null;
       }
       actions.assignData("personalDetails", personalDetails);
-      stepperCheck("personalDetails", index, personalDetails);
+      stepperCheck(index, personalDetails);
     }
   };
   const formatDate = (dateStr) => {

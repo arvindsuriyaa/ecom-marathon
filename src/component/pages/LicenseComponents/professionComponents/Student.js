@@ -8,20 +8,39 @@ import { createSelector } from "reselect";
 import { studentForm } from "../../../../styles/FormStyles";
 import SelectField from "../../../common/SelectField";
 import * as fetchApi from "../../../../api/apiAction";
+import _ from "lodash";
 
 const Student = (props) => {
   const { actions, reducer } = props;
   const { handleData, stepperCheck } = actions;
   const { qualificationDetails } = reducer;
+  const clonedDetails = _.cloneDeep(qualificationDetails);
   const classes = studentForm();
-  const { id, userId, annumSal, levelId, ...userInfo } = qualificationDetails;
+  const {
+    id,
+    userId,
+    annumSal,
+    levelId,
+    ...studentInfo
+  } = qualificationDetails;
   let detail = "qualificationDetails";
   let index = 2;
 
   useEffect(() => {
     assignDistrict(qualificationDetails.stateId);
-    stepperCheck("student", index, userInfo);
+    stepperCheck(index, studentInfo);
   }, []);
+
+  useEffect(() => {
+    stepperCheck(index, studentInfo);
+  }, [qualificationDetails]);
+
+  useEffect(() => {
+    if (qualificationDetails.stateId !== null) {
+      assignDistrict(qualificationDetails.stateId);
+    }
+    // stepperCheck("student", index, studentInfo);
+  }, [qualificationDetails.stateId]);
 
   const [district, setDistrict] = useState([]);
 
@@ -43,7 +62,7 @@ const Student = (props) => {
           labelName="Current Qualification"
           name="userQualificationId"
           value={qualificationDetails.userQualificationId}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, studentInfo)}
           data={props.apiData[3]}
         />
         <InputField
@@ -52,7 +71,7 @@ const Student = (props) => {
           label="Institution Name"
           name="institutionName"
           value={qualificationDetails.institutionName}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, studentInfo)}
         />
         <InputField
           sm={6}
@@ -60,7 +79,7 @@ const Student = (props) => {
           label="Studying at"
           name="studyingAt"
           value={qualificationDetails.studyingAt}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, studentInfo)}
         />
         <InputField
           sm={12}
@@ -68,7 +87,7 @@ const Student = (props) => {
           label="Institution Address"
           name="institutionAddress"
           value={qualificationDetails.institutionAddress}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, studentInfo)}
         />
         <InputField
           sm={6}
@@ -76,7 +95,7 @@ const Student = (props) => {
           label="Country"
           name="country"
           value={qualificationDetails.country}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, studentInfo)}
         />
         <SelectField
           sm={6}
@@ -84,11 +103,9 @@ const Student = (props) => {
           labelName="State"
           name="stateId"
           value={qualificationDetails.stateId}
-          onChange={async (event) => {
-            handleData(event, index, detail, userInfo);
-            qualificationDetails["districtId"] = null;
-            actions.assignData("qualificationDetails", qualificationDetails);
-            await assignDistrict(qualificationDetails.stateId);
+          onChange={(event) => {
+            handleData(event, index, detail, studentInfo);
+            assignDistrict(clonedDetails.stateId);
           }}
           data={props.apiData[2] || []}
         />
@@ -97,9 +114,9 @@ const Student = (props) => {
           className={classes.formControl}
           labelName="District"
           name="districtId"
-          value={userInfo.districtId}
+          value={studentInfo.districtId}
           onChange={(event) => {
-            handleData(event, index, detail, userInfo);
+            handleData(event, index, detail, studentInfo);
           }}
           data={district}
           disabled={qualificationDetails.stateId === null}
@@ -110,7 +127,7 @@ const Student = (props) => {
           label="Pincode"
           name="pincode"
           value={qualificationDetails.pincode}
-          onChange={(event) => handleData(event, index, detail, userInfo)}
+          onChange={(event) => handleData(event, index, detail, studentInfo)}
         />
       </Grid>
     </div>

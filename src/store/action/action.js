@@ -11,4 +11,3 @@ export const assignData = (name, value) => ({
 export const resetForm = (value) => ({
   type: RESET_DATA,
 });
-

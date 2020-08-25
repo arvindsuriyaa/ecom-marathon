@@ -7,14 +7,12 @@ import { createSelector } from "reselect";
 
 const HouseWives = (props) => {
   const classes = HouseWifeForm();
-  const { reducer, actions } = props;
-  const { isCompleted } = reducer;
+  const { actions } = props;
+  const { stepperCheck } = actions;
+  const index = 2;
 
   useEffect(() => {
-    isCompleted[2] = true;
-    let professionType = "HouseWife";
-    actions.assignData("profession", professionType);
-    actions.assignData("isCompleted", isCompleted);
+    stepperCheck(index, {});
   }, []);
 
   return <div className={classes.root}>No Form Available</div>;

@@ -26,8 +26,12 @@ const AddressDetails = (props) => {
   useEffect(() => {
     fetchData();
     assignDistrict(addressDetails.stateId);
-    stepperCheck("addressDetails", index, addressDetails);
+    stepperCheck(index, addressDetails);
   }, []);
+
+  useEffect(() => {
+    stepperCheck(index, addressDetails);
+  }, [reducer.addressDetails]);
 
   async function fetchData() {
     const response = await fetchApi.addressDetailsAPI();

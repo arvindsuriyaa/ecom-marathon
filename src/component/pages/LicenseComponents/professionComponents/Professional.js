@@ -18,8 +18,12 @@ const Professional = (props) => {
   const userInfo = { annumSal, levelId };
 
   useEffect(() => {
-    stepperCheck("student", index, userInfo);
+    stepperCheck(index, userInfo);
   }, []);
+  
+  useEffect(() => {
+    stepperCheck(index, userInfo);
+  }, [qualificationDetails]);
 
   return (
     <div className={classes.root}>

@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Container, BottomNavigation, Button, Box } from "@material-ui/core";
-import { navigationList, routePath } from "../../utils/productSeed";
+import { navigationList, routePath } from "../../constants/constants";
 import { formStyles } from "../../styles/FormStyles";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router-dom";
@@ -43,6 +43,7 @@ const License = (props) => {
       cancel();
     };
   }, []);
+
   const checkStepper = async (step, newCompleted) => {
     let formData = setDetail(step, formDetails, completed);
     let data = Object.entries(formData);
