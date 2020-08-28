@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { Grid } from "@material-ui/core";
 import { bindDispatch } from "../../../../utils";
@@ -17,13 +16,11 @@ const Professional = (props) => {
   const { annumSal, levelId } = qualificationDetails;
   const userInfo = { annumSal, levelId };
 
-  useEffect(() => {
+  const assignStepper = () => {
     stepperCheck(index, userInfo);
-  }, []);
-  
-  useEffect(() => {
-    stepperCheck(index, userInfo);
-  }, [qualificationDetails]);
+  };
+
+  useEffect(assignStepper, [qualificationDetails]);
 
   return (
     <div className={classes.root}>
@@ -33,7 +30,7 @@ const Professional = (props) => {
           className={classes.formControl}
           labelName="Salary Per Annum"
           name="annumSal"
-          value={qualificationDetails.annumSal}
+          value={qualificationDetails.annumSal || ""}
           onChange={(event) => handleData(event, index, detail, userInfo)}
           data={apiData[0]}
         />
@@ -42,7 +39,7 @@ const Professional = (props) => {
           className={classes.formControl}
           labelName="Level"
           name="levelId"
-          value={qualificationDetails.levelId}
+          value={qualificationDetails.levelId || ""}
           onChange={(event) => handleData(event, index, detail, userInfo)}
           data={apiData[1]}
         />

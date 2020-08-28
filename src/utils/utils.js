@@ -1,5 +1,3 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable no-useless-escape */
 import { assignData } from "../store/action/action";
 import _ from "lodash";
 
@@ -65,6 +63,7 @@ export const checkDuplication = (userList) => {
 export const checkMandatoryField = () => {
   return (dispatch, getState) => {
     const { personalDetails, errors } = getState().reducer;
+    // eslint-disable-next-line no-useless-escape
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!personalDetails.name) {
       errors.name = true;
@@ -103,7 +102,7 @@ export const handleCheckbox = (event, index, detail, value) => {
 };
 
 export const keyCheck = (data, vacantFieldCount, flag) => {
-  data.map((detail) => {
+  data.forEach((detail) => {
     if (Array.isArray(detail[1])) {
       if (!detail[1].length) {
         vacantFieldCount += 1;

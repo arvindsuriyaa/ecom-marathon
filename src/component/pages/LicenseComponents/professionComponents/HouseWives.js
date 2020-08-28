@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { HouseWifeForm } from "../../../../styles/FormStyles";
 import { bindDispatch } from "../../../../utils";
@@ -11,9 +10,11 @@ const HouseWives = (props) => {
   const { stepperCheck } = actions;
   const index = 2;
 
-  useEffect(() => {
+  const assignStepper = () => {
     stepperCheck(index, {});
-  }, []);
+  };
+
+  useEffect(assignStepper, []);
 
   return <div className={classes.root}>No Form Available</div>;
 };

@@ -1,5 +1,3 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable no-useless-escape */
 import ASSIGN_DATA from "../types/types";
 import { RESET_DATA } from "../types/types";
 

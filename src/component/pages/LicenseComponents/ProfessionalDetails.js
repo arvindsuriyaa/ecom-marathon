@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable array-callback-return */
 import React, { useState, useEffect } from "react";
 import { RadioGroup, CircularProgress } from "@material-ui/core";
 import Student from "./professionComponents/Student";
@@ -25,11 +23,7 @@ const ProfessionalDetails = (props) => {
   const [apiData, setApiData] = useState([]);
   const [status, setStatus] = useState(<CircularProgress size={70} />);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
+  const assignProps = () => {
     const newProps = { ...props, apiData };
     if (qualificationDetails.userRoleId === 1) {
       setComponent(<Student {...newProps} />);
@@ -38,20 +32,25 @@ const ProfessionalDetails = (props) => {
     } else if (qualificationDetails.userRoleId === 3) {
       setComponent(<HouseWives {...newProps} />);
     }
-  }, [apiData]);
+  };
 
-  async function fetchData() {
-    const response = await fetchApi.qualificationAPI();
-    if (Array.isArray(response)) {
-      let Data = [];
-      response.map((item) => {
-        Data.push(item.data);
-      });
-      setApiData(Data);
-    } else {
-      setStatus(<DialogBox />);
+  useEffect(assignProps, [apiData]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetchApi.qualificationAPI();
+      if (Array.isArray(response)) {
+        let Data = [];
+        response.forEach((item) => {
+          Data.push(item.data);
+        });
+        setApiData(Data);
+      } else {
+        setStatus(<DialogBox />);
+      }
     }
-  }
+    fetchData();
+  }, []);
 
   const assignToggle = async (value) => {
     setToggle(value);
@@ -59,7 +58,7 @@ const ProfessionalDetails = (props) => {
 
   const clearField = async (record) => {
     let data = Object.entries(record);
-    data.map((item) => {
+    data.forEach((item) => {
       if (typeof item[1] === "string") {
         item[1] = "";
       } else if (typeof item[1] === "number" || typeof item[1] === "object") {
@@ -109,9 +108,10 @@ const ProfessionalDetails = (props) => {
       <div className={classes.radioRoute}>
         <RadioGroup row className={classes.alignRadio}>
           {apiData[4] &&
-            apiData[4].map((role) => {
+            apiData[4].map((role, index) => {
               return (
                 <RadioButton
+                  key={index}
                   value={role.id}
                   checked={qualificationDetails.userRoleId === role.id}
                   onChange={(event) => assignComponent(event)}

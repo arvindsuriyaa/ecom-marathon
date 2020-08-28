@@ -1,5 +1,3 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Container, BottomNavigation, Button, Box } from "@material-ui/core";
 import { navigationList, routePath } from "../../constants/constants";
@@ -31,19 +29,6 @@ const License = (props) => {
   const history = useHistory();
   let formDetails = {};
 
-  useEffect(() => {
-    let steps = [0, 1, 2];
-    let newCompleted = { ...isCompleted };
-    steps.map((step) => {
-      checkStepper(step, newCompleted);
-    });
-    history.push("/Form/PersonalDetails");
-
-    return () => {
-      cancel();
-    };
-  }, []);
-
   const checkStepper = async (step, newCompleted) => {
     let formData = setDetail(step, formDetails, completed);
     let data = Object.entries(formData);
@@ -59,6 +44,17 @@ const License = (props) => {
     }
     await actions.assignData("isCompleted", newCompleted);
   };
+
+  const assignStepper = () => {
+    let steps = [0, 1, 2];
+    let newCompleted = { ...isCompleted };
+    steps.map((step) => {
+      return checkStepper(step, newCompleted);
+    });
+    history.push("/Form/PersonalDetails");
+  };
+
+  useEffect(assignStepper, []);
 
   const cancel = () => {
     const newCompleted = completed;
@@ -145,7 +141,7 @@ const License = (props) => {
     history.push(routePath[step]);
   };
 
-  useEffect(() => {
+  const handleRoute = () => {
     const { history, location } = props;
     const { action } = history;
     if (action === "POP") {
@@ -157,7 +153,9 @@ const License = (props) => {
         handleStep(2);
       }
     }
-  }, [history.action]);
+  };
+
+  useEffect(handleRoute, [history.action]);
 
   return (
     <div id="wrapper">

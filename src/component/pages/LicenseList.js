@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return */
 import React, { Component } from "react";
 import { Button, CircularProgress } from "@material-ui/core";
 import "react-table-v6/react-table.css";
@@ -32,7 +31,7 @@ class Table extends Component {
     const { toggleIcon } = reducer;
     const toggle = { ...toggleIcon };
     let toggleFlag = Object.entries(toggle);
-    toggleFlag.map((flag) => {
+    toggleFlag.forEach((flag) => {
       flag[1] = false;
     });
     let toggleSort = Object.fromEntries(toggleFlag);

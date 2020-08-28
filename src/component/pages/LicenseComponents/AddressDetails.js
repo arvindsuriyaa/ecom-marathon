@@ -1,5 +1,3 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Grid, CircularProgress } from "@material-ui/core";
 import InputField from "../../common/InputField";
@@ -23,28 +21,30 @@ const AddressDetails = (props) => {
   let index = 1;
   let detail = "addressDetails";
 
-  useEffect(() => {
+  const assignStepper = () => {
+    stepperCheck(index, addressDetails);
+  };
+
+  useEffect(assignStepper, [reducer.addressDetails]);
+
+  const fetchAssign = () => {
+    async function fetchData() {
+      const response = await fetchApi.addressDetailsAPI();
+      if (Array.isArray(response)) {
+        let Data = [];
+        response.forEach((item) => {
+          Data.push(item.data);
+        });
+        setApiData(Data);
+      } else {
+        setStatus(<DialogBox />);
+      }
+    }
     fetchData();
     assignDistrict(addressDetails.stateId);
-    stepperCheck(index, addressDetails);
-  }, []);
+  };
 
-  useEffect(() => {
-    stepperCheck(index, addressDetails);
-  }, [reducer.addressDetails]);
-
-  async function fetchData() {
-    const response = await fetchApi.addressDetailsAPI();
-    if (Array.isArray(response)) {
-      let Data = [];
-      response.map((item) => {
-        Data.push(item.data);
-      });
-      setApiData(Data);
-    } else {
-      setStatus(<DialogBox />);
-    }
-  }
+  useEffect(fetchAssign, []);
 
   const assignDistrict = async (id) => {
     if (id) {
@@ -66,7 +66,7 @@ const AddressDetails = (props) => {
           type="text"
           label="Address"
           name="address"
-          value={addressDetails.address}
+          value={addressDetails.address || ""}
           onChange={(event) => handleData(event, index, detail, addressDetails)}
         />
         <InputField
@@ -74,7 +74,7 @@ const AddressDetails = (props) => {
           type="text"
           label="Country"
           name="country"
-          value={addressDetails.country}
+          value={addressDetails.country || ""}
           onChange={(event) => handleData(event, index, detail, addressDetails)}
         />
         <SelectField
@@ -82,7 +82,7 @@ const AddressDetails = (props) => {
           labelName="State"
           className={props.className}
           name="stateId"
-          value={addressDetails.stateId}
+          value={addressDetails.stateId || ""}
           onChange={async (event) => {
             handleData(event, index, detail, addressDetails);
             addressDetails["districtId"] = null;
@@ -96,7 +96,7 @@ const AddressDetails = (props) => {
           className={classes.formControl}
           labelName="District"
           name="districtId"
-          value={addressDetails.districtId}
+          value={addressDetails.districtId || ""}
           onChange={(event) => {
             handleData(event, index, detail, addressDetails);
           }}
@@ -108,7 +108,7 @@ const AddressDetails = (props) => {
           type="number"
           label="Pincode"
           name="pincode"
-          value={addressDetails.pincode}
+          value={addressDetails.pincode || ""}
           onChange={(event) => handleData(event, index, detail, addressDetails)}
         />
       </Grid>

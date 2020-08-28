@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable array-callback-return */
 import React, { useEffect, useState } from "react";
 import {
   Grid,
@@ -33,29 +31,30 @@ const PersonalDetails = (props) => {
   let chosenLang = [];
 
   useEffect(() => {
+    async function fetchData() {
+      const response = await fetchApi.personalAddressAPI();
+      if (Array.isArray(response)) {
+        let Data = [];
+        response.forEach((item) => {
+          Data.push(item.data);
+        });
+        setApiData(Data);
+      } else {
+        setStatus(<DialogBox />);
+      }
+    }
     fetchData();
-    stepperCheck(index, personalDetails);
   }, []);
 
-  useEffect(() => {
+  const assignStepper = () => {
     stepperCheck(index, personalDetails);
-  }, [reducer.personalDetails]);
+  };
 
-  async function fetchData() {
-    const response = await fetchApi.personalAddressAPI();
-    if (Array.isArray(response)) {
-      let Data = [];
-      response.map((item) => {
-        Data.push(item.data);
-      });
-      setApiData(Data);
-    } else {
-      setStatus(<DialogBox />);
-    }
-  }
+  useEffect(assignStepper, [reducer.personalDetails]);
+
   if (apiData.length) {
     apiData[2].filter((item) => {
-      personalDetails.preferredLanguageId.map((value) => {
+      personalDetails.preferredLanguageId.forEach((value) => {
         if (value === item.id) {
           chosenLang.push(item.name);
         }
@@ -66,8 +65,8 @@ const PersonalDetails = (props) => {
 
   const onTagsChange = (event, value) => {
     let lang = [];
-    apiData[2].map((item) => {
-      value.map((val) => {
+    apiData[2].forEach((item) => {
+      value.forEach((val) => {
         if (val === item.name) {
           return lang.push(item.id);
         }
@@ -140,6 +139,7 @@ const PersonalDetails = (props) => {
                     />
                   );
                 }
+                return null;
               })}
           </RadioGroup>
         </Grid>
@@ -254,6 +254,7 @@ const PersonalDetails = (props) => {
                 />
               );
             }
+            return null;
           })}
         <InputField
           className={
