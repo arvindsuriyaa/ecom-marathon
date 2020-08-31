@@ -23,7 +23,7 @@ const PersonalDetails = (props) => {
   const classes = personalStyle();
   const { actions, reducer } = props;
   const { handleData, handleCheckbox, stepperCheck } = actions;
-  const { personalDetails, errors, emailCheck } = reducer;
+  const { personalDetails, errors } = reducer;
   const [apiData, setApiData] = useState([]);
   const [status, setStatus] = useState(<CircularProgress size={70} />);
   let index = 0;
@@ -32,7 +32,7 @@ const PersonalDetails = (props) => {
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetchApi.personalAddressAPI();
+      const response = await fetchApi.personalDetailsAPI();
       if (Array.isArray(response)) {
         let Data = [];
         response.forEach((item) => {
@@ -105,8 +105,8 @@ const PersonalDetails = (props) => {
       <Grid className={classes.grid} container spacing={3}>
         <InputField
           sm={6}
-          error={errors.name}
-          helperText={errors.name ? "*This Field is Mandatory" : ""}
+          error={errors.name.length ? true : false}
+          helperText={errors.name}
           type="text"
           label="User Name"
           name="name"
@@ -164,17 +164,9 @@ const PersonalDetails = (props) => {
           type="text"
           label="Mail Id"
           name="mailId"
-          error={errors.mailId}
+          error={errors.mailId.length ? true : false}
           disabled={reducer.isEdit}
-          helperText={
-            errors.mailId
-              ? !personalDetails.mailId
-                ? "*This Field is Mandatory"
-                : emailCheck
-                ? "*This Email ID already Exists"
-                : "*Email Expected format aaa@bbb.com"
-              : ""
-          }
+          helperText={errors.mailId}
           value={personalDetails.mailId || ""}
           onChange={(event) =>
             handleData(event, index, detail, personalDetails)

@@ -10,7 +10,7 @@ import {
   Switch,
   Redirect,
 } from "react-router-dom";
-import License from "./component/pages/License";
+import AddLicense from "./component/pages/AddLicense";
 import NavBar from "./component/common/NavBar";
 const Root = () => {
   return (
@@ -19,7 +19,7 @@ const Root = () => {
       <Router>
         <Switch>
           <Route path={routePath.FORM}>
-            <License>
+            <AddLicense>
               <Switch>
                 <Route
                   path={routePath.PERSONAL_DETAILS}
@@ -38,12 +38,9 @@ const Root = () => {
                   to={routePath.PERSONAL_DETAILS}
                 />
               </Switch>
-            </License>
+            </AddLicense>
           </Route>
-          <Route
-            path={routePath.TABLE}
-            render={(prop) => <LicenseList {...prop} />}
-          />
+          <Route path={routePath.TABLE} component={LicenseList} />
           <Redirect exact from="/" to={routePath.TABLE} />
         </Switch>
       </Router>

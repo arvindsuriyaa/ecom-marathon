@@ -49,12 +49,8 @@ export const checkDuplication = (userList) => {
     duplicationCheck = userList.some(
       (item) => item.mailId === personalDetails.mailId && !isEdit
     );
-
     if (duplicationCheck) {
-      errors.mailId = true;
-      await dispatch(assignData("emailCheck", true));
-    } else {
-      await dispatch(assignData("emailCheck", false));
+      errors.mailId = "*This Email ID already Exists.";
     }
     await dispatch(assignData("errors", { ...errors }));
   };
@@ -66,10 +62,12 @@ export const checkMandatoryField = () => {
     // eslint-disable-next-line no-useless-escape
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!personalDetails.name) {
-      errors.name = true;
+      errors.name = "*This Field is Mandatory";
     }
-    if (!reg.test(personalDetails.mailId)) {
-      errors.mailId = true;
+    if (!personalDetails.mailId) {
+      errors.mailId = "*This Field is Mandatory";
+    } else if (personalDetails.mailId && !reg.test(personalDetails.mailId)) {
+      errors.mailId = "*Invalid Email. Expected Format : aaa@example.com";
     }
   };
 };

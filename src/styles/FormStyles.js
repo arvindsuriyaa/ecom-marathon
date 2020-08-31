@@ -1,5 +1,6 @@
 import { makeStyles, withStyles } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import variables from "./_variables.scss";
 
 export const formStyles = makeStyles({
   container: {
@@ -17,7 +18,7 @@ export const formStyles = makeStyles({
     justifyContent: "space-between",
   },
   stepper: {
-    background: "rgb(241,241,241)",
+    background: variables.formbackground,
     height: "130px",
   },
   footerAlign: {
@@ -73,7 +74,7 @@ export const CustomAutocomplete = withStyles({
 export const personalStyle = makeStyles((theme) => ({
   radio: {
     "&$checked": {
-      color: "#000000ad",
+      color: variables.fontColor,
     },
   },
   progress: {
@@ -83,14 +84,13 @@ export const personalStyle = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
-  checked: {},
   userRoot: {
-    background: "rgb(241,241,241)",
+    background: variables.formbackground,
     height: "auto",
     width: "80%",
   },
   grid: {
-    padding: "25px 50px",
+    padding: variables.gridPadding,
   },
   paper: {
     padding: theme.spacing(2),
@@ -107,7 +107,7 @@ export const personalStyle = makeStyles((theme) => ({
   },
   Typography: {
     fontSize: "24px",
-    color: "#000000ad",
+    color: variables.fontColor,
   },
   show: {
     display: "block",
@@ -119,7 +119,7 @@ export const personalStyle = makeStyles((theme) => ({
 
 export const communicationStyle = makeStyles({
   addressRoot: {
-    background: "rgb(241,241,241)",
+    background: variables.formbackground,
     height: "auto",
     width: "80%",
   },
@@ -135,17 +135,16 @@ export const communicationStyle = makeStyles({
   },
   title: {
     fontSize: 20,
-    padding: "20px 50px",
+    padding: variables.titlepadding,
   },
   content: {
     fontSize: 15,
-    padding: "20px 50px",
+    padding: variables.titlepadding,
   },
 });
 
 export const professionStyle = makeStyles({
   root: {
-    // background:'rgb(241,241,241)',
     height: "95%",
     width: "80%",
   },
@@ -157,7 +156,7 @@ export const professionStyle = makeStyles({
     justifyContent: "center",
   },
   radioRoute: {
-    background: "rgb(241,241,241)",
+    background: variables.formbackground,
     height: "130px",
     display: "flex",
     alignItems: "center",
@@ -175,32 +174,32 @@ export const professionStyle = makeStyles({
 export const studentForm = makeStyles({
   root: {
     height: "auto",
-    background: "rgb(241,241,241)",
+    background: variables.formbackground,
   },
   grid: {
-    padding: "25px 50px",
+    padding: variables.gridPadding,
   },
 });
 export const professionalForm = makeStyles({
   root: {
     height: "auto",
-    background: "rgb(241,241,241)",
+    background: variables.formbackground,
   },
   grid: {
-    padding: "25px 50px",
+    padding: variables.gridPadding,
   },
 });
 
 export const HouseWifeForm = makeStyles({
   root: {
     height: "200px",
-    background: "rgb(241,241,241)",
+    background: variables.formbackground,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     fontSize: 25,
   },
   grid: {
-    padding: "25px 50px",
+    padding: variables.gridPadding,
   },
 });

@@ -7,6 +7,7 @@ import {
   createMuiTheme,
   MuiThemeProvider,
 } from "@material-ui/core";
+import variables from "../../styles/_variables.scss";
 
 const muiTheme = createMuiTheme({
   overrides: {
@@ -18,20 +19,21 @@ const muiTheme = createMuiTheme({
 
         "&$active": {
           color: "white",
-          border: "2px solid blue",
+          border: `2px solid ${variables.commonTheme}`,
           borderRadius: "50px",
         },
         "&$completed": {
-          border: "2px solid #3f51b5",
+          color: variables.commonTheme,
+          border: `2px solid ${variables.commonTheme}`,
           "&$active": {
-            color: "blue",
-            border: "2px solid blue",
+            color: variables.commonTheme,
+            border: `2px solid ${variables.commonTheme}`,
             borderRadius: "50px",
           },
         },
       },
       text: {
-        fill: "blue",
+        fill: variables.commonTheme,
       },
     },
 
@@ -39,10 +41,10 @@ const muiTheme = createMuiTheme({
       label: {
         color: "grey",
         "&$active": {
-          color: "blue",
+          color: variables.commonTheme,
         },
         "&$completed": {
-          color: "blue",
+          color: variables.commonTheme,
         },
       },
     },
@@ -51,12 +53,12 @@ const muiTheme = createMuiTheme({
         padding: "0px",
       },
       lineVertical: {
-        borderColor: "blue",
+        borderColor: variables.commonTheme,
         borderLeftWidth: "3px",
       },
       active: {
         "& $line": {
-          borderColor: "blue",
+          borderColor: variables.commonTheme,
         },
       },
       completed: {
@@ -85,8 +87,8 @@ const StepperBox = (props) => {
               onClick={() => props.handleStep(index)}
               disabled={
                 (props.errors.name && props.errors.mailId) ||
-                props.errors.name ||
-                props.errors.mailId
+                props.errors.name?true:false ||
+                props.errors.mailId?true:false
               }
             >
               <StepLabel>{label}</StepLabel>

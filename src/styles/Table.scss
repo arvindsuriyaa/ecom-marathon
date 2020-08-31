@@ -1,16 +1,18 @@
+@import "./variables";
+
 .ReactTable {
   margin: 0px 35px;
   border: none;
 }
 .ReactTable .rt-table {
-  border: 1px solid #00000033;
+  border: 1px solid $table-border;
 }
 .ReactTable .rt-tbody .rt-td {
   border-right: none;
 }
 .ReactTable .rt-thead.-header {
   box-shadow: none;
-  background-color: rgb(227, 227, 227);
+  background-color: $table-headerColor;
 }
 
 .ReactTable .rt-thead .rt-th,
@@ -25,10 +27,10 @@
   outline: none;
 }
 .rt-tr-group:nth-of-type(even) {
-  background: #2baa9610;
+  background: $even-row-color;
 }
 .rt-tr-group:nth-of-type(odd) {
-  background: #ffffff;
+  background: $odd-row-color;
 }
 .rt-tr-group {
   background: rgb(247, 247, 247);

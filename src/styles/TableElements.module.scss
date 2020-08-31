@@ -1,3 +1,5 @@
+@import "./variables";
+
 .headerTitle {
   display: flex;
   justify-content: space-between;
@@ -29,7 +31,7 @@
 .sort {
   border: none;
   background: #e3e3e3;
-  color: rgb(71, 75, 182);
+  color: $common-theme;
   font-size: 16px;
   pointer-events: all;
   cursor: pointer;
@@ -38,7 +40,7 @@
   justify-content: center;
   align-items: center;
 }
-.arrowUp{
+.arrowUp {
   display: flex;
   justify-content: center;
   align-self: flex-end;
@@ -46,16 +48,16 @@
 
 .moreIcon {
   border: none;
-  color: #474bb6;
+  color: $common-theme;
   background: transparent;
-  font-size: 15px;
+  font-size: $table-fontSize;
   outline: none;
   cursor: pointer;
 }
 .actionButton {
   border: solid 0.1px;
   background: transparent;
-  font-size: 15px;
+  font-size: $table-fontSize;
   padding: 5px;
   width: 65px;
   cursor: pointer;
@@ -98,9 +100,9 @@
 .disableEvents {
   pointer-events: none;
   border: none;
-  color: #474bb6;
+  color: $common-theme;
   background: transparent;
-  font-size: 15px;
+  font-size: $table-fontSize;
   outline: none;
 }
 .allowEdit {

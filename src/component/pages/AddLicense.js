@@ -13,7 +13,7 @@ import * as fetchApi from "../../api/apiAction";
 import * as Root from "../../constants/path";
 import { withRouter } from "react-router-dom";
 
-const License = (props) => {
+const AddLicense = (props) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const { actions, reducer } = props;
@@ -98,10 +98,10 @@ const License = (props) => {
   const handleNext = async (activeStep) => {
     if (!activeStep) {
       if (!personalDetails.name) {
-        errors.name = true;
+        errors.name = "*This Field is Mandatory";
       }
       if (!personalDetails.mailId) {
-        errors.mailId = true;
+        errors.mailId = "*This Field is Mandatory";
       }
     }
     (async () => {
@@ -208,4 +208,4 @@ const mapStateToProps = createSelector(
   (reducer) => ({ reducer })
 );
 
-export default connect(mapStateToProps, bindDispatch)(withRouter(License));
+export default connect(mapStateToProps, bindDispatch)(withRouter(AddLicense));

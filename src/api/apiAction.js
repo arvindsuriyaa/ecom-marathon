@@ -36,7 +36,7 @@ export const getUsersById = async (id) => {
   }
 };
 
-export const personalAddressAPI = async () => {
+export const personalDetailsAPI = async () => {
   try {
     let response = await axios.all([
       instance.get(path.KNOW_PRODUCT),

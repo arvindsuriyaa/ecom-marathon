@@ -42,10 +42,9 @@ export const initialState = {
     2: false,
   },
   errors: {
-    name: false,
-    mailId: false,
+    name: "",
+    mailId: "",
   },
-  emailCheck: false,
   toggleIcon: {
     userNameSort: false,
     mailSort: false,

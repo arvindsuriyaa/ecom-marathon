@@ -1,0 +1,20 @@
+$form-background: rgb(241, 241, 241);
+$grid-padding: 25px 50px;
+$title-padding: 20px 50px;
+$typography-color: #000000ad;
+$table-headerColor: rgb(227, 227, 227);
+$table-border: #00000033;
+$even-row-color: #2baa9610;
+$odd-row-color: #ffffff;
+$common-theme: #3169fb;
+$table-fontSize: 15px;
+$highlighter-color: yellow;
+$searchFilter-color: #0000007a;
+
+:export {
+  formbackground: $form-background;
+  gridPadding: $grid-padding;
+  fontcolor: $typography-color;
+  titlepadding: $title-padding;
+  commonTheme: $common-theme;
+}
